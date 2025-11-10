@@ -1,26 +1,368 @@
+
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #09090b;
+  --surface: #0f1720;
+
+  --cyan: #00F5FF;
+  --cyan-rgb: 0, 245, 255;
+  --magenta: #FF00E5;
+  --magenta-rgb: 255, 0, 229;
+  --violet: #A78BFA;
+  --violet-rgb: 167, 139, 250;
+  --text-gray: #CBD5E1;
+
+  --text: #fafafa;
+  --text-muted: #CBD5E1;
+
+  --overlay-8: rgba(14,16,20,0.08);
+  --overlay-16: rgba(14,16,20,0.16);
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-foreground: var(--text);
+  --color-cyan: var(--cyan);
+  --color-magenta: var(--magenta);
+  --color-violet: var(--violet);
+  --color-text-gray: var(--text-gray);
+  --font-sans: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  font-family: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Prose styles for Markdown content */
+.prose {
+  color: var(--text);
+  max-width: 65ch;
+}
+
+.prose p {
+  margin: 1rem 0;
+  line-height: 1.75;
+}
+
+.prose a {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+.prose a:hover {
+  color: var(--magenta);
+  text-decoration: none;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.prose em {
+  font-style: italic;
+}
+
+.prose del {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.prose code {
+  background: var(--surface);
+  color: var(--cyan);
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.prose pre {
+  background: var(--surface);
+  border: 1px solid rgba(var(--cyan-rgb), 0.2);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.prose pre code {
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.875rem;
+}
+
+.prose h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 2rem 0 1rem;
+}
+
+.prose h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(var(--cyan-rgb), 0.2);
+}
+
+.prose h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.prose h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 1rem 0 0.5rem;
+}
+
+.prose h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin: 1rem 0 0.5rem;
+}
+
+.prose h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin: 1rem 0 0.5rem;
+  color: var(--text-gray);
+}
+
+.prose ul,
+.prose ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+  line-height: 1.75;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose li {
+  margin: 0.5rem 0;
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin: 0.5rem 0;
+}
+
+.prose blockquote {
+  border-left: 4px solid var(--cyan);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--text-gray);
+}
+
+.prose img {
+  display: block;
+  margin: 1.5rem auto;
+  max-width: 42rem;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid rgba(var(--cyan-rgb), 0.3);
+  margin: 2rem 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  display: block;
+}
+
+.prose thead {
+  background: var(--surface);
+}
+
+.prose th {
+  border: 1px solid rgba(var(--cyan-rgb), 0.3);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.prose td {
+  border: 1px solid rgba(var(--cyan-rgb), 0.3);
+  padding: 0.75rem 1rem;
+}
+
+.prose tbody tr:hover {
+  background: rgba(var(--cyan-rgb), 0.05);
+}
+
+/* Task list checkboxes */
+.prose input[type="checkbox"] {
+  margin-right: 0.5rem;
+  accent-color: var(--cyan);
+}
+
+/* KaTeX math styling */
+.prose .katex {
+  font-size: 1.1em;
+}
+
+.prose .katex-display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Inline code in headings */
+.prose h1 code,
+.prose h2 code,
+.prose h3 code,
+.prose h4 code,
+.prose h5 code,
+.prose h6 code {
+  font-size: 0.9em;
+}
+
+/* Nested lists */
+.prose ul ul,
+.prose ul ol,
+.prose ol ul,
+.prose ol ol {
+  margin: 0.5rem 0;
+}
+
+/* Links in headings */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a,
+.prose h5 a,
+.prose h6 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.prose h1 a:hover,
+.prose h2 a:hover,
+.prose h3 a:hover,
+.prose h4 a:hover,
+.prose h5 a:hover,
+.prose h6 a:hover {
+  color: var(--cyan);
+}
+
+/* Max width override for full-width layouts */
+.prose.max-w-none {
+  max-width: none;
+}
+
+
+/* Shared link underline hover effect (violet bar growing right) */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 2px;
+  width: 0;
+  background: var(--violet);
+  transition: width 0.3s ease;
+}
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Button hover effect: semi-transparent background fills left to right */
+.btn-fill-hover {
+  position: relative;
+  overflow: hidden;
+}
+.btn-fill-hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 100%;
+  background: rgba(var(--magenta-rgb), 0.3);
+  transition: right 0.3s ease;
+  z-index: -1;
+}
+.btn-fill-hover:hover::after {
+  right: 0;
+}
+
+/* Link underline effect: magenta line grows left to right on hover */
+.link-underline-hover {
+  position: relative;
+  display: inline-block;
+}
+.link-underline-hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 2px;
+  width: 0;
+  background: var(--magenta);
+  transition: width 0.3s ease;
+}
+.link-underline-hover:hover::after {
+  width: 100%;
+}
+.link-underline-hover.active::after {
+  width: 100%;
+}
+
+/* Buttons following the minimal palette */
+.btn-primary {
+  background: var(--cyan);
+  color: #09090b;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+.btn-primary:hover {
+  background: var(--violet);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--violet);
+  border: 1px solid var(--violet);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  font-weight: 600;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.btn-secondary:hover {
+  color: var(--primary-1);
+  border-color: var(--primary-1);
 }

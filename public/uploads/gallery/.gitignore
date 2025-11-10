@@ -1,0 +1,5 @@
+# Ignorar todas las imágenes subidas
+*
+
+# Mantener este archivo para que el directorio exista en git
+!.gitignore

@@ -1,0 +1,224 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { Globe } from "lucide-react";
+import en from "@/i18n/en.json";
+import es from "@/i18n/es.json";
+
+type Locale = "en" | "es";
+
+interface NavLinkItem {
+  href: string;
+  label: string;
+  isActive: boolean;
+}
+
+export default function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  
+  // Extract locale from pathname (e.g., /en/... or /es/...)
+  const locale: Locale = pathname.startsWith("/es") ? "es" : "en";
+  const t = locale === "en" ? en : es;
+
+  // persist menu state
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("menuOpen");
+      if (saved === "1") setMenuOpen(true);
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("menuOpen", menuOpen ? "1" : "0");
+    } catch (e) {
+      // ignore
+    }
+  }, [menuOpen]);
+
+  const toggleLang = () => {
+    const newLocale = locale === "en" ? "es" : "en";
+    
+    // Get the current path without the locale prefix
+    let pathWithoutLocale = pathname;
+    if (pathname.startsWith("/en/")) {
+      pathWithoutLocale = pathname.slice(3); // Remove "/en"
+    } else if (pathname.startsWith("/es/")) {
+      pathWithoutLocale = pathname.slice(3); // Remove "/es"
+    } else if (pathname === "/en" || pathname === "/es") {
+      pathWithoutLocale = "/";
+    }
+    
+    // Construct new URL with new locale
+    const newPath = `/${newLocale}${pathWithoutLocale}`;
+    
+    // Navigate to the new URL
+    window.location.href = newPath;
+  };
+
+  // Helper to check if a link is active
+  // Root path (/) never shows as active
+  // Other paths show active only when exact match
+  const isActive = (path: string) => {
+    // Normalize paths for comparison
+    const normalizedPathname = pathname.endsWith("/") && pathname !== "/"
+      ? pathname.slice(0, -1)
+      : pathname;
+    const normalizedPath = path.endsWith("/") && path !== "/"
+      ? path.slice(0, -1)
+      : path;
+
+    // Root path never active
+    if (normalizedPath === "/") {
+      return false;
+    }
+
+    // Consider locale prefix (e.g. /en/collections) or direct match
+    // If pathname ends with the path (e.g. '/en/collections' endsWith '/collections') treat as active
+    if (normalizedPathname === normalizedPath) return true;
+    try {
+      return normalizedPathname.endsWith(normalizedPath);
+    } catch (e) {
+      return false;
+    }
+  };
+
+  // Navigation links configuration
+  const navLinks: NavLinkItem[] = [
+    {
+      href: "/collections",
+      label: t["nav.categories"],
+      isActive: isActive("/collections"),
+    },
+    {
+      href: "/writers",
+      label: t["nav.writers"],
+      isActive: isActive("/writers"),
+    },
+    {
+      href: "/survey",
+      label: t["nav.survey"],
+      isActive: isActive("/survey"),
+    },
+  ];
+
+  // Reusable NavLink component
+  const NavLink = ({ href, label, isActive, className = "" }: NavLinkItem & { className?: string }) => (
+    <Link
+      href={href}
+      className={`${className} font-semibold link-underline-hover ${isActive ? "!text-magenta" : "hover:!text-magenta transition-colors"}`}
+    >
+      {label}
+    </Link>
+  );
+
+  return (
+    <header className="w-full bg-transparent">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="group flex items-center gap-3 transition-opacity hover:opacity-90">
+          <span className="relative inline-block h-8 w-8">
+            <Image src="/carboncodex.svg" alt={t.siteName} fill className="object-contain" />
+            <span
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-cyan"
+              style={{
+                WebkitMaskImage: 'url(/carboncodex.svg)',
+                maskImage: 'url(/carboncodex.svg)',
+                WebkitMaskSize: 'contain',
+                maskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat',
+                maskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center',
+                maskPosition: 'center',
+              }}
+              aria-hidden="true"
+            />
+          </span>
+           <span className="font-semibold text-lg text-magenta group-hover:text-cyan transition-colors">
+            {t.siteName}
+          </span>
+        </Link>
+
+        {/* Desktop nav */}
+        <nav className="hidden md:block">
+          <ul className="flex items-center gap-6 text-sm">
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <NavLink {...link} />
+              </li>
+            ))}
+            <li>
+              <button
+                onClick={toggleLang}
+                className="ml-2 px-3 py-1 rounded text-sm bg-transparent flex items-center gap-2 border border-magenta btn-fill-hover"
+                title={locale === "en" ? t["spanish"] : t["english"]}
+              >
+                <Globe className="w-4 h-4" />
+                <span>{locale === "en" ? t["spanish"] : t["english"]}</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Mobile hamburger */}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Toggle menu"
+            className="p-2 rounded-md border border-violet"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu panel - animated */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 transform px-6 pb-4 ${
+          menuOpen ? "max-h-60 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2"
+        }`}
+      >
+        <ul className="flex flex-col gap-3 text-sm">
+          {navLinks.map((link) => (
+            <li key={link.href}>
+              <NavLink {...link} className="block" />
+            </li>
+          ))}
+          <li className="pt-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleLang}
+                className="px-3 py-1 rounded text-sm bg-transparent w-28 flex items-center gap-2 justify-center transition-all border border-violet hover:border-cyan hover:bg-cyan/10 text-foreground"
+                aria-label="Toggle language"
+              >
+                <Globe className="w-4 h-4" />
+                <span className="text-sm">{locale === "en" ? t["spanish"] : t["english"]}</span>
+              </button>
+              <span className="text-xs text-text-gray">
+                {t["nav.language"]}
+              </span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </header>
+  );
+}
