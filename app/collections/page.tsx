@@ -1,4 +1,4 @@
-import Link from "next/link";
+import SilentLink from "../components/SilentLink";
 import { headers } from "next/headers";
 import { getCategories } from "@/src/lib/blog";
 import en from "@/i18n/en.json";
@@ -24,10 +24,11 @@ export default async function CollectionsPage() {
           <p className="text-text-gray">No categories yet.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {cats.map((c) => (
-              <Link
+            {cats.map((c: { slug: string; name: string; description: string | null; imageUrl: string | null; count: number }) => (
+              <SilentLink
                 key={c.slug}
                 href={`/categories/${c.slug}`}
+                ariaLabel={c.name}
                 className="group p-5 bg-surface/50 border border-violet/20 rounded-lg hover:border-magenta transition-all flex flex-col"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -39,7 +40,7 @@ export default async function CollectionsPage() {
                 {c.description ? (
                   <p className="mt-2 text-xs text-text-gray line-clamp-3">{c.description}</p>
                 ) : null}
-              </Link>
+              </SilentLink>
             ))}
           </div>
         )}

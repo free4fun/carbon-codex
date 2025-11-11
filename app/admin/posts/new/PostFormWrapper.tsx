@@ -1,6 +1,6 @@
 "use client";
 
-import PostForm, { type PostFormValues } from "@/src/components/admin/PostForm";
+import PostForm, { type PostFormValues } from "@/app/components/admin/PostForm";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createPostAction } from "./actions";

@@ -4,7 +4,7 @@ import { auth } from "@/src/lib/auth";
 import { parseTags, slugify } from "@/src/lib/utils";
 import { postGroups, postGroupTags, posts, tags } from "@/src/db/schema";
 import { eq, sql } from "drizzle-orm";
-import type { PostFormValues } from "@/src/components/admin/PostForm";
+import type { PostFormValues } from "@/app/components/admin/PostForm";
 
 export async function createPostAction(values: PostFormValues) {
   const session = (await auth()) as any;

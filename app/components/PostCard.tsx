@@ -1,124 +1,178 @@
-'use client';
+"use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { Clock, User } from "lucide-react";
+import SilentLink from "./SilentLink";
+import { useRouter } from "next/navigation";
+import en from "@/i18n/en.json";
+import es from "@/i18n/es.json";
+import { Clock } from "lucide-react";
 
-type PostCardProps = {
+type Props = {
   post: {
-    id: number;
+    slug: string;
     title: string;
-    excerpt: string;
-    author: string;
-    authorSlug: string;
-    date: string;
-    readTime: number;
-    tags: string[];
+    description: string | null;
+    locale: string;
+    coverUrl: string | null;
+    readMinutes?: number | null;
+    author: { slug: string | null; name: string | null; avatarUrl?: string | null };
+    category: { slug: string | null; name: string | null; imageUrl?: string | null };
+    publishedAt: Date | null;
+    tags?: { slug: string; name: string }[];
   };
-  locale: string;
-  featured?: boolean;
-  minReadText: string;
 };
 
-export default function PostCard({ post, locale, featured = false, minReadText }: PostCardProps) {
-  const handleAuthorClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    window.location.href = `/authors/${post.authorSlug}`;
-  };
-
-  if (featured) {
-    return (
-      <div className="lg:row-span-3 lg:row-start-1 bg-surface border border-violet/20 rounded-lg overflow-hidden group hover:border-magenta transition-all">
-        <Link href={`/blog/${post.id}`} className="group block">
-          <div className="flex flex-col">
-            <div className="relative overflow-hidden rounded-lg bg-surface aspect-[16/9] mb-3 md:mb-4">
-              <Image 
-                src="/blog/posts/generic.webp"
-                alt={post.title}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <span className="absolute top-3 right-3 md:top-4 md:right-4 bg-background/80 backdrop-blur-sm px-2 md:px-3 py-1 rounded text-xs md:text-sm text-text-gray z-10 inline-flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
-                {post.readTime} {minReadText}
-              </span>
-            </div>
-            <div className="flex-1 flex flex-col">
-              <div className="flex items-center text-xs md:text-sm text-text-gray mb-2 md:mb-3">
-                <span>{post.date}</span>
-                <span className="ml-auto inline-flex items-center gap-1.5">
-                  <button
-                    onClick={handleAuthorClick}
-                    className="inline-flex items-center gap-1.5 hover:text-magenta transition-colors cursor-pointer bg-transparent border-none p-0"
-                  >
-                    <User className="h-3.5 w-3.5" aria-hidden="true" />{post.author}
-                  </button>
-                </span>
-              </div>
-              <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 md:mb-4 group-hover:text-magenta transition-colors">
-                {post.title}
-              </h3>
-              <p className="text-sm md:text-base text-text-gray mb-3 md:mb-4">{post.excerpt}</p>
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <span key={tag} className="text-xs px-2 md:px-3 py-1 rounded-full border border-violet/30 text-text-gray">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Link>
-      </div>
-    );
+function formatDate(date: Date, locale: string): string {
+  const monthsES = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+  ];
+  
+  const monthsEN = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  
+  if (locale === "es") {
+    // Formato: dd de mes de año
+    return `${day} de ${monthsES[month]} de ${year}`;
+  } else {
+    // Formato: Month dd, year
+    return `${monthsEN[month]} ${day}, ${year}`;
   }
+}
 
-  // Regular compact card
+export default function PostCard({ post }: Props) {
+  const t = post.locale === "es" ? es : en;
+  const router = useRouter();
+  const goToPost = () => router.push(`/blog/${post.slug}`);
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goToPost();
+    }
+  };
   return (
-    <article>
-      <div className="bg-surface border border-violet/20 rounded-lg overflow-hidden group hover:border-magenta transition-all">
-        <Link href={`/blog/${post.id}`} className="group block">
-          <div className="flex gap-3 md:gap-4">
-          <div className="relative w-40 md:w-56 overflow-hidden rounded-lg bg-surface aspect-[16/9] shrink-0">
-            <Image 
-              src="/blog/posts/generic.webp"
-              alt={post.title}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-110"
+    <article
+      role="link"
+      tabIndex={0}
+      aria-label={post.title}
+      onClick={goToPost}
+      onKeyDown={onKey}
+      className="cursor-pointer border border-magenta/40 rounded-lg overflow-hidden bg-background hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-all group flex flex-col md:flex-row"
+    >
+      {/* Image section - full width on mobile, left column on md+ */}
+      <div className="w-full md:w-56 flex-shrink-0 flex flex-col">
+        <div className="block relative flex-shrink-0">
+          <div className="relative w-full aspect-video overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.coverUrl || "/carboncodex.svg"}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover transform-gpu transition-transform duration-300 will-change-transform origin-center group-hover:scale-[1.2]"
+              loading="lazy"
             />
-            <span className="absolute top-1.5 right-1.5 md:top-2 md:right-2 bg-background/80 backdrop-blur-sm px-1.5 md:px-2 py-0.5 rounded text-xs text-text-gray z-10 inline-flex items-center gap-1">
-              <Clock className="h-3 w-3 md:h-3.5 md:w-3.5" aria-hidden="true" /> {post.readTime} {minReadText}
-            </span>
+            
           </div>
-          <div className="flex-1 flex flex-col justify-between min-h-0">
-            <div>
-              <div className="flex items-center text-xs text-text-gray mb-1.5 md:mb-2">
-                <span className="hidden sm:inline">{post.date}</span>
-                <span className="hidden sm:inline-flex items-center gap-1.5 ml-auto">
-                  <button
-                    onClick={handleAuthorClick}
-                    className="inline-flex items-center gap-1.5 hover:text-magenta transition-colors cursor-pointer bg-transparent border-none p-0"
-                  >
-                    <User className="h-3.5 w-3.5" aria-hidden="true" />{post.author}
-                  </button>
-                </span>
-              </div>
-              <h3 className="text-sm md:text-base lg:text-lg font-bold mb-1.5 md:mb-2 group-hover:text-magenta transition-colors line-clamp-2">
-                {post.title}
-              </h3>
-              <p className="text-xs md:text-sm text-text-gray line-clamp-2 hidden sm:block">{post.excerpt}</p>
+          {/* Reading time badge on image - top right */}
+          {post.readMinutes && (
+            <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-xs flex items-center gap-1">
+              <Clock size={12} className="inline-block" />
+              {post.readMinutes} {t["page.minRead"]}
             </div>
-            <div className="flex flex-wrap gap-1 mt-2">
-              {post.tags.slice(0, 2).map((tag) => (
-                <span key={tag} className="text-xs px-2 py-0.5 rounded-full border border-violet/30 text-text-gray">
-                  {tag}
-                </span>
-              ))}
-            </div>
+          )}
+        </div>
+        
+        {/* Desktop: category/date anchored at bottom of the left column */}
+        <div className="hidden md:flex mt-auto p-2 flex-col gap-0.5 text-xs">
+          {post.category?.name && (
+            <SilentLink
+              href={`/categories/${post.category.slug}`}
+              className="hover:!text-magenta transition-colors truncate uppercase font-semibold"
+              ariaLabel={post.category.name || undefined}
+              stopPropagation
+            >
+              {post.category.name}
+            </SilentLink>
+          )}
+          <div className="text-text-gray truncate">
+            {post.publishedAt
+              ? formatDate(new Date(post.publishedAt), post.locale)
+              : "Draft"}
           </div>
         </div>
-      </Link>
+      </div>
+      
+      {/* Content section - below image on mobile, right side on md+ */}
+      <div className="p-3 flex flex-col flex-grow">
+        {/* Title */}
+        <div className="block mb-1">
+          <h3 className="text-sm md:text-xl font-semibold group-hover:text-magenta transition-colors">
+            {post.title}
+          </h3>
+        </div>
+
+        {/* Tags row */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {post.tags.slice(0, 4).map((t) => (
+              <SilentLink
+                key={t.slug}
+                href={`/tags/${t.slug}`}
+                ariaLabel={t.name}
+                stopPropagation
+                className="text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-surface/40 border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
+              >
+                {t.name}
+              </SilentLink>
+            ))}
+          </div>
+        )}
+
+        {/* Description */}
+        {post.description && (
+          <div className="block mb-2">
+            <p className="text-sm text-text-gray line-clamp-2">
+              {post.description}
+            </p>
+          </div>
+        )}
+
+        {/* Bottom row: mobile-only category/date (left) + author (right). Desktop shows only author (category/date in left column). */}
+        <div className="mt-auto flex items-center justify-between gap-3 text-xs pt-1">
+          <div className="flex flex-col gap-1 min-w-0 md:hidden">
+            {post.category?.name && (
+              <SilentLink
+                href={`/categories/${post.category.slug}`}
+                className="hover:!text-magenta transition-colors truncate uppercase tracking-wide font-semibold"
+                ariaLabel={post.category.name || undefined}
+                stopPropagation
+              >
+                {post.category.name}
+              </SilentLink>
+            )}
+            <div className="text-text-gray truncate">
+              {post.publishedAt
+                ? formatDate(new Date(post.publishedAt), post.locale)
+                : "Draft"}
+            </div>
+          </div>
+          {post.author?.name && (
+            <SilentLink 
+              href={`/authors/${post.author.slug}`} 
+              className="flex items-center gap-1.5 hover:!text-magenta transition-colors flex-shrink-0 md:ml-auto"
+              ariaLabel={post.author.name || undefined}
+              stopPropagation
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.author.avatarUrl || "/carboncodex.svg"} alt="" className="w-6 h-6 rounded-full object-cover border" />
+              <span>{post.author.name}</span>
+            </SilentLink>
+          )}
+        </div>
       </div>
     </article>
   );

@@ -1,6 +1,6 @@
 import { posts, postGroups, postGroupTags, tags } from "@/src/db/schema";
 import { eq, sql } from "drizzle-orm";
-import PostForm, { type PostFormValues } from "@/src/components/admin/PostForm";
+import PostForm, { type PostFormValues } from "@/app/components/admin/PostForm";
 import { auth } from "@/src/lib/auth";
 import { parseTags, slugify } from "@/src/lib/utils";
 import { redirect } from "next/navigation";

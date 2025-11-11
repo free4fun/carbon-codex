@@ -15,6 +15,8 @@
   "page.center": "center.",
   "page.deploy": "Deploy Now",
   "page.docs": "Documentation",
+  "page.minRead": "min",
+  "page.articles": "articles",
   "footer.rights": "All rights reserved",
   "footer.about": "About",
   "footer.privacy": "Privacy",
@@ -30,6 +32,5 @@
   "home.surveyDescription": "We're working on new ways to experience learning. Help us improve by answering just a few questions.",
   "home.takeSurvey": "Take the survey",
   "home.viewAllPosts": "View all posts",
-  "home.readMore": "Read more",
-  "home.minRead": "min read"
+  "home.readMore": "Read more"
 }

@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import PostCard from "@/src/components/PostCard";
+import PostCard from "@/app/components/PostCard";
 import { authors, categories, categoryTranslations, postGroups, posts } from "@/src/db/schema";
 import { and, desc, eq, sql } from "drizzle-orm";
 

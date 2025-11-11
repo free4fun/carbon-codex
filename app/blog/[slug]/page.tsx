@@ -1,7 +1,7 @@
 import { getPostBySlug, getRelatedByTag } from "@/src/lib/blog";
 import { headers } from "next/headers";
 import { Markdown } from "@/src/lib/markdown";
-import TagList from "@/src/components/TagList";
+import TagList from "@/app/components/TagList";
 
 type Props = { params: Promise<{ slug: string }> };
 

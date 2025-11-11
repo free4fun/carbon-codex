@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
+// Replaced next/link usages with SilentLink for programmatic navigation without status bar URLs
+import SilentLink from "./SilentLink";
 import Image from "next/image";
 import { Globe } from "lucide-react";
 import en from "@/i18n/en.json";
@@ -111,18 +112,19 @@ export default function Header() {
 
   // Reusable NavLink component
   const NavLink = ({ href, label, isActive, className = "" }: NavLinkItem & { className?: string }) => (
-    <Link
+    <SilentLink
       href={href}
       className={`${className} font-semibold link-underline-hover ${isActive ? "!text-magenta" : "hover:!text-magenta transition-colors"}`}
+      ariaLabel={label}
     >
       {label}
-    </Link>
+    </SilentLink>
   );
 
   return (
     <header className="w-full bg-transparent">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="group flex items-center gap-3 transition-opacity hover:opacity-90">
+        <SilentLink href="/" ariaLabel={t.siteName} className="group flex items-center gap-3 transition-opacity hover:opacity-90">
           <span className="relative inline-block h-8 w-8">
             <Image src="/carboncodex.svg" alt={t.siteName} fill className="object-contain" />
             <span
@@ -140,10 +142,10 @@ export default function Header() {
               aria-hidden="true"
             />
           </span>
-           <span className="font-semibold text-lg text-magenta group-hover:text-cyan transition-colors">
+          <span className="font-semibold text-lg text-magenta group-hover:text-cyan transition-colors">
             {t.siteName}
           </span>
-        </Link>
+        </SilentLink>
 
         {/* Desktop nav */}
         <nav className="hidden md:block">
@@ -156,7 +158,7 @@ export default function Header() {
             <li>
               <button
                 onClick={toggleLang}
-                className="ml-2 px-3 py-1 rounded text-sm bg-transparent flex items-center gap-2 border border-magenta btn-fill-hover"
+                className="font-semibold ml-2 px-3 py-1 rounded text-sm bg-transparent flex items-center gap-2 border border-magenta btn-fill-hover"
                 title={locale === "en" ? t["spanish"] : t["english"]}
               >
                 <Globe className="w-4 h-4" />
@@ -206,7 +208,7 @@ export default function Header() {
             <div className="flex items-center gap-2">
               <button
                 onClick={toggleLang}
-                className="px-3 py-1 rounded text-sm bg-transparent w-28 flex items-center gap-2 justify-center transition-all border border-violet hover:border-cyan hover:bg-cyan/10 text-foreground"
+                className="px-3 py-1 rounded text-sm bg-transparent w-28 flex items-center gap-2 justify-center transition-all border border-violet hover:border-magenta text-foreground"
                 aria-label="Toggle language"
               >
                 <Globe className="w-4 h-4" />

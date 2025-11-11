@@ -30,7 +30,7 @@ export function Markdown({ children, className }: Props) {
             <img {...props} alt={props.alt || ""} className="max-w-2xl w-full h-auto rounded my-6 mx-auto" />
           ),
           h1: (props) => <h1 {...props} className="mt-8 mb-4 text-3xl font-bold" />,
-          h2: (props) => <h2 {...props} className="mt-8 mb-4 text-2xl font-semibold border-b border-cyan/20 pb-2" />,
+          h2: (props) => <h2 {...props} className="mt-8 mb-4 text-2xl font-semibold border-b border-violet/20 pb-2" />,
           h3: (props) => <h3 {...props} className="mt-6 mb-3 text-xl font-semibold" />,
           h4: (props) => <h4 {...props} className="mt-4 mb-2 text-lg font-semibold" />,
           h5: (props) => <h5 {...props} className="mt-4 mb-2 text-base font-semibold" />,
@@ -40,17 +40,17 @@ export function Markdown({ children, className }: Props) {
           ol: (props) => <ol {...props} className="my-4 ml-6 list-decimal space-y-2" />,
           li: (props) => <li {...props} className="leading-relaxed" />,
           blockquote: (props) => (
-            <blockquote {...props} className="my-4 border-l-4 border-cyan pl-4 italic text-text-gray" />
+            <blockquote {...props} className="my-4 border-l-4 border-violet pl-4 italic text-text-gray" />
           ),
           table: (props) => (
             <div className="my-6 overflow-x-auto">
-              <table {...props} className="min-w-full border-collapse border border-cyan/30" />
+              <table {...props} className="min-w-full border-collapse border border-violet/30" />
             </div>
           ),
           thead: (props) => <thead {...props} className="bg-[var(--surface)]" />,
-          th: (props) => <th {...props} className="border border-cyan/30 px-4 py-2 text-left font-semibold" />,
-          td: (props) => <td {...props} className="border border-cyan/30 px-4 py-2" />,
-          hr: (props) => <hr {...props} className="my-8 border-t border-cyan/30" />,
+          th: (props) => <th {...props} className="border border-violet/30 px-4 py-2 text-left font-semibold" />,
+          td: (props) => <td {...props} className="border border-violet/30 px-4 py-2" />,
+          hr: (props) => <hr {...props} className="my-8 border-t border-violet/30" />,
           code: ({ inline, className, children, ...props }: any) => {
             if (inline) {
               return (
@@ -66,7 +66,7 @@ export function Markdown({ children, className }: Props) {
             );
           },
           pre: (props) => (
-            <pre {...props} className="my-6 rounded bg-[var(--surface)] p-4 overflow-x-auto border border-cyan/20" />
+            <pre {...props} className="my-6 rounded bg-[var(--surface)] p-4 overflow-x-auto border border-violet/20" />
           ),
           input: (props) => {
             if (props.type === "checkbox") {

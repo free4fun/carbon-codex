@@ -1,9 +1,9 @@
-import Link from "next/link";
+import SilentLink from "../../components/SilentLink";
 import Image from "next/image";
 import { headers } from "next/headers";
 import { authors, authorTranslations, postGroups, posts } from "@/src/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
-import PostCard from "@/src/components/PostCard";
+import PostCard from "@/app/components/PostCard";
 
 export default async function AuthorPage({
   params,
@@ -142,7 +142,7 @@ export default async function AuthorPage({
       </div>
 
       <div className="mt-10">
-        <Link href="/" className="text-violet hover:text-magenta transition-colors">← Back to home</Link>
+        <SilentLink href="/" ariaLabel="Back to home" className="text-violet hover:text-magenta transition-colors">← Back to home</SilentLink>
       </div>
     </main>
   );

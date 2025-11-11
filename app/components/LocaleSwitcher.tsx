@@ -30,7 +30,7 @@ export default function LocaleSwitcher({
   };
   
   return (
-    <div className="flex items-center gap-2 text-sm border border-cyan/30 px-3 py-1 rounded">
+    <div className="flex items-center gap-2 text-sm border border-violet/30 hover:border-magenta transition-colors px-3 py-1 rounded">
       <span className="text-text-gray">Language:</span>
       <span className="font-medium uppercase">{currentLocale}</span>
       <span className="text-text-gray">|</span>

@@ -3,7 +3,8 @@
 
 :root {
   --background: #09090b;
-  --surface: #0f1720;
+  /* Surface uses magenta at 10% opacity over transparent */
+  --surface: rgba(var(--magenta-rgb), 0.1);
 
   --cyan: #00F5FF;
   --cyan-rgb: 0, 245, 255;
@@ -23,6 +24,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--text);
+  --color-surface: var(--surface);
   --color-cyan: var(--cyan);
   --color-magenta: var(--magenta);
   --color-violet: var(--violet);
@@ -48,8 +50,8 @@ body {
 }
 
 .prose a {
-  color: var(--cyan);
-  text-decoration: underline;
+  color: var(--magenta);
+  text-decoration: none;
   text-underline-offset: 2px;
   transition: color 0.2s ease;
 }
@@ -74,7 +76,7 @@ body {
 
 .prose code {
   background: var(--surface);
-  color: var(--cyan);
+  color: var(--magenta);
   padding: 0.15rem 0.35rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
@@ -83,7 +85,7 @@ body {
 
 .prose pre {
   background: var(--surface);
-  border: 1px solid rgba(var(--cyan-rgb), 0.2);
+  border: 1px solid rgba(var(--magenta-rgb), 0.2);
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -111,7 +113,7 @@ body {
   line-height: 1.3;
   margin: 2rem 0 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(var(--cyan-rgb), 0.2);
+  border-bottom: 1px solid rgba(var(--magenta-rgb), 1.0);
 }
 
 .prose h3 {
@@ -162,13 +164,29 @@ body {
   margin: 0.5rem 0;
 }
 
+/* Hide list marker when li contains a checkbox (task list items) */
+.prose li:has(> input[type="checkbox"]) {
+  list-style-type: none;
+}
+
+/* Custom magenta markers for ul */
+.prose ul > li::marker {
+  color: rgba(var(--magenta-rgb), 0.8);
+}
+
+/* Custom magenta markers for ol */
+.prose ol > li::marker {
+  color: rgba(var(--magenta-rgb), 0.8);
+  font-weight: 600;
+}
+
 .prose li > ul,
 .prose li > ol {
   margin: 0.5rem 0;
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--cyan);
+  border-left: 4px solid var(--magenta);
   padding-left: 1rem;
   margin: 1.5rem 0;
   font-style: italic;
@@ -178,7 +196,7 @@ body {
 .prose img {
   display: block;
   margin: 1.5rem auto;
-  max-width: 42rem;
+  max-width: 36rem;
   width: 100%;
   height: auto;
   border-radius: 0.5rem;
@@ -186,7 +204,7 @@ body {
 
 .prose hr {
   border: none;
-  border-top: 1px solid rgba(var(--cyan-rgb), 0.3);
+  border-top: 1px solid rgba(var(--magenta-rgb), 1.0);
   margin: 2rem 0;
 }
 
@@ -203,26 +221,55 @@ body {
 }
 
 .prose th {
-  border: 1px solid rgba(var(--cyan-rgb), 0.3);
+  border: 1px solid rgba(var(--magenta-rgb), 0.3);
   padding: 0.75rem 1rem;
   text-align: left;
   font-weight: 600;
 }
 
 .prose td {
-  border: 1px solid rgba(var(--cyan-rgb), 0.3);
+  border: 1px solid rgba(var(--magenta-rgb), 0.3);
   padding: 0.75rem 1rem;
 }
 
 .prose tbody tr:hover {
-  background: rgba(var(--cyan-rgb), 0.05);
+  background: rgba(var(--magenta-rgb), 0.05);
 }
 
 /* Task list checkboxes */
 .prose input[type="checkbox"] {
   margin-right: 0.5rem;
-  accent-color: var(--cyan);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  /* Maintain native size - approximately 1em to match text */
+  width: 1em;
+  height: 1em;
+  border-radius: 0.25rem;
+  border: 2px solid rgba(var(--magenta-rgb), 0.6);
+  background: transparent;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  flex-shrink: 0;
 }
+.prose input[type="checkbox"]:checked {
+  background: rgba(var(--magenta-rgb), 0.9);
+  border-color: rgba(var(--magenta-rgb), 1);
+}
+.prose input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -60%) rotate(-45deg);
+  width: 0.5em;
+  height: 0.25em;
+  border: 2px solid var(--background);
+  border-top: 0;
+  border-right: 0;
+}
+
 
 /* KaTeX math styling */
 .prose .katex {
@@ -270,7 +317,7 @@ body {
 .prose h4 a:hover,
 .prose h5 a:hover,
 .prose h6 a:hover {
-  color: var(--cyan);
+  color: var(--magenta);
 }
 
 /* Max width override for full-width layouts */
@@ -279,11 +326,12 @@ body {
 }
 
 
-/* Shared link underline hover effect (violet bar growing right) */
+/* Shared link underline hover effect (magenta bar growing right) */
 .link-underline {
   position: relative;
   display: inline-block;
 }
+
 .link-underline::after {
   content: "";
   position: absolute;
@@ -291,9 +339,10 @@ body {
   bottom: -2px;
   height: 2px;
   width: 0;
-  background: var(--violet);
+  background: var(--magenta);
   transition: width 0.3s ease;
 }
+
 .link-underline:hover::after {
   width: 100%;
 }
@@ -310,10 +359,11 @@ body {
   bottom: 0;
   left: 0;
   right: 100%;
-  background: rgba(var(--magenta-rgb), 0.3);
+  background: rgba(var(--magenta-rgb), 1.0);
   transition: right 0.3s ease;
   z-index: -1;
 }
+
 .btn-fill-hover:hover::after {
   right: 0;
 }

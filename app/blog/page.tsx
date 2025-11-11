@@ -1,7 +1,7 @@
 import { getLatestPosts } from "@/src/lib/blog";
 import { headers } from "next/headers";
-import Link from "next/link";
-import PostCard from "@/src/components/PostCard";
+import SilentLink from "../components/SilentLink";
+import PostCard from "@/app/components/PostCard";
 
 type Props = {
   searchParams: { cursor?: string };
@@ -34,12 +34,13 @@ export default async function BlogIndex({ searchParams }: Props) {
 
       <div className="mt-8 flex justify-center">
         {nextCursor ? (
-          <Link
+          <SilentLink
             className="px-4 py-2 border rounded hover:bg-[var(--surface)]"
             href={`/blog?cursor=${encodeURIComponent(nextCursor)}`}
+            ariaLabel="Older posts"
           >
             Older posts
-          </Link>
+          </SilentLink>
         ) : null}
       </div>
     </div>

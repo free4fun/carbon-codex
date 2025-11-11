@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ImageGallery from "@/src/components/admin/ImageGallery";
+import ImageGallery from "@/app/components/admin/ImageGallery";
 
 type Category = { 
   id: number; 

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Link from "next/link";
+import SilentLink from "./SilentLink";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
 
@@ -16,10 +16,10 @@ export default function Footer() {
   return (
     <footer className="w-full mt-auto">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="border-t border-cyan/40 pt-8">
+        <div className="border-t border-violet/40 pt-8">
           <div className="flex justify-center items-center">
             <span className="text-sm">
-              © {currentYear} <span className="text-cyan">{t.siteName}</span>. {t["footer.rights"]}.
+              © {currentYear} <SilentLink href="/" ariaLabel={t.siteName} className="text-cyan hover:underline">{t.siteName}</SilentLink>. {t["footer.rights"]}.
             </span>
           </div>
         </div>

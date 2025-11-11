@@ -15,6 +15,8 @@
   "page.center": ".",
   "page.deploy": "Desplegar Ahora",
   "page.docs": "Documentación",
+  "page.minRead": "min",
+  "page.articles": "artículos",
   "footer.rights": "Todos los derechos reservados",
   "footer.about": "Acerca de",
   "footer.privacy": "Privacidad",
@@ -30,6 +32,5 @@
   "home.surveyDescription": "Estamos trabajando en nuevas formas de experimentar el aprendizaje. Ayúdanos a mejorar respondiendo solo algunas preguntas.",
   "home.takeSurvey": "Responder encuesta",
   "home.viewAllPosts": "Ver todas las publicaciones",
-  "home.readMore": "Leer más",
-  "home.minRead": "min"
+  "home.readMore": "Leer más"
 }
