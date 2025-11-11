@@ -48,9 +48,8 @@ body {
 }
 
 .prose a {
-  color: var(--magenta);
+  color: rgba(var(--magenta-rgb), 0.8);
   text-decoration: none;
-  text-underline-offset: 2px;
   transition: color 0.2s ease;
 }
 .prose a:hover {
@@ -82,8 +81,8 @@ body {
 }
 
 .prose pre {
-  background: var(--surface-magenta);
-  border: 1px solid rgba(var(--magenta-rgb), 0.2);
+  background: rgba(var(--magenta-rgb), 0.05);
+  border: 1px solid rgba(var(--magenta-rgb), 1.0);
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -110,8 +109,11 @@ body {
   font-weight: 600;
   line-height: 1.3;
   margin: 2rem 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(var(--magenta-rgb), 0.4);
+  padding-bottom: 0;
+  border-bottom: 2px solid rgba(var(--magenta-rgb), 1.0);
+  display: inline-block;
+  width: fit-content;
+  max-width: 60%;
 }
 
 .prose h3 {
@@ -202,8 +204,10 @@ body {
 
 .prose hr {
   border: none;
-  border-top: 1px solid rgba(var(--magenta-rgb), 1.0);
-  margin: 2rem 0;
+  border-top: 1px solid rgba(var(--magenta-rgb), 0.4);
+  margin: 1rem 0 2rem 0;
+  width: 120%;
+  margin-left: -10%;
 }
 
 .prose table {
@@ -270,8 +274,9 @@ body {
 
 /* KaTeX math styling */
 .prose .katex {
-  font-size: 1.1em;
+  font-size: 1.4em;
   color: var(--magenta);
+  font-weight: 400;
 }
 
 .prose .katex-display {

@@ -46,7 +46,7 @@ export default async function CategoriesPage() {
                     <span className="text-xs text-text-gray group-hover:text-magenta whitespace-nowrap">{c.count} {t["page.articles"]}</span>
                   </div>
                   {c.description ? (
-                    <p className="text-sm text-text-gray group-hover:text-white line-clamp-2">{c.description}</p>
+                    <p className="text-sm md:text-lg text-text-gray group-hover:text-white line-clamp-2">{c.description}</p>
                   ) : null}
                 </div>
               </SilentLink>
