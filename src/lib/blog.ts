@@ -109,12 +109,14 @@ export async function getPostBySlug(slug: string, locale: string) {
       groupSlug: postGroups.slug,
       coverUrl: postGroups.coverUrl,
       title: posts.title,
+      description: posts.description,
       bodyMd: posts.bodyMd,
       readMinutes: posts.readMinutes,
       locale: posts.locale,
       publishedAt: posts.publishedAt,
       authorSlug: authors.slug,
       authorName: authors.name,
+      authorAvatarUrl: authors.avatarUrl,
       catSlug: categories.slug,
       catName: categories.name,
     })
@@ -149,6 +151,7 @@ export async function getPostBySlug(slug: string, locale: string) {
     },
     post: {
       title: chosen.title!,
+      description: chosen.description ?? null,
       bodyMd: chosen.bodyMd!,
       readMinutes: rt,
       locale: chosen.locale!,
@@ -157,6 +160,7 @@ export async function getPostBySlug(slug: string, locale: string) {
     author: {
       slug: chosen.authorSlug,
       name: chosen.authorName,
+      avatarUrl: chosen.authorAvatarUrl,
     },
     category: {
       slug: chosen.catSlug,

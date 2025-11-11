@@ -2,11 +2,10 @@
 
 import SilentLink from "./SilentLink";
 import PostImage from "./PostImage";
-import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
-import { Clock } from "lucide-react";
+import { Clock, User } from "lucide-react";
 
 type Props = {
   post: {
@@ -24,24 +23,15 @@ type Props = {
 };
 
 function formatDate(date: Date, locale: string): string {
-  const monthsES = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-  ];
-  
-  const monthsEN = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  
-  const day = date.getDate();
-  const month = date.getMonth();
-  const year = date.getFullYear();
-  
-  if (locale === "es") {
-    return `${day} de ${monthsES[month]} de ${year}`;
-  } else {
-    return `${monthsEN[month]} ${day}, ${year}`;
+   try {
+    return new Intl.DateTimeFormat(locale === "es" ? "es-ES" : "en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  } catch {
+    // Fallback simple si Intl falla por alguna razón
+    return date.toISOString().slice(0, 10);
   }
 }
 
@@ -111,13 +101,13 @@ export default function FeaturedPostCard({ post }: Props) {
         </div>
 
         {/* Bottom row: category/date on left, author on right */}
-        <div className="flex items-center justify-between gap-3 text-xs mt-auto">
+        <div className="flex items-center justify-between gap-3 text-sm mt-auto">
           {/* Left: Category and Date */}
           <div className="flex flex-col gap-1 min-w-0">
             {post.category?.name && (
               <SilentLink 
                 href={`/categories/${post.category.slug}`} 
-                className="text-base hover:!text-magenta transition-colors uppercase tracking-wide font-semibold"
+                className="link-effect-from-magenta uppercase tracking-wide font-semibold text-lg"
                 ariaLabel={post.category.name || undefined}
                 stopPropagation
               >
@@ -135,12 +125,12 @@ export default function FeaturedPostCard({ post }: Props) {
           {post.author?.name && (
             <SilentLink 
               href={`/authors/${post.author.slug}`} 
-              className="text-sm flex items-center gap-1.5 text-text-gray hover:!text-magenta group-hover:text-white transition-colors flex-shrink-0"
+              className="flex items-center gap-1.5 text-text-gray link-effect-from-text group-hover:text-white transition-colors "
               ariaLabel={post.author.name || undefined}
               stopPropagation
             >
-              <AuthorImage src={post.author.avatarUrl} alt={post.author.name || ""} className="w-6 h-6 rounded-full object-cover border" />
-              <span>{post.author.name}</span>
+              <User className="w-5 h-5" />
+              <span className="text-lg">{post.author.name}</span>
             </SilentLink>
           )}
         </div>

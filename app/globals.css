@@ -1,4 +1,3 @@
-
 @import "tailwindcss";
 
 :root {
@@ -36,6 +35,42 @@ body {
   font-family: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
+.link-effect-from-text {
+  color: var(--text);
+  transition: color 0.3s ease;
+}
+
+.link-effect-from-text:hover {
+  animation: link-text-fade 1s ease-in-out infinite alternate;
+}
+
+.link-effect-from-magenta {
+  color: var(--magenta);
+  transition: color 0.3s ease;
+}
+
+.link-effect-from-magenta:hover {
+  animation: link-magenta-fade 1s ease-in-out infinite alternate;
+}
+
+@keyframes link-magenta-fade {
+  0%, 100% {
+    color: var(--magenta);
+  }
+  50% {
+    color: var(--text);
+  }
+}
+
+@keyframes link-text-fade {
+  0%, 100% {
+    color: var(--text);
+  }
+  50% {
+    color: var(--magenta);
+  }
+}
+
 /* Prose styles for Markdown content */
 .prose {
   color: var(--text);
@@ -48,7 +83,7 @@ body {
 }
 
 .prose a {
-  color: rgba(var(--magenta-rgb), 0.8);
+  color: rgba(var(--magenta-rgb), 1.0);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -102,6 +137,11 @@ body {
   font-weight: 700;
   line-height: 1.2;
   margin: 2rem 0 1rem;
+  padding-bottom: 0;
+  border-bottom: 2px solid rgba(var(--magenta-rgb), 1.0);
+  display: inline-block;
+  width: fit-content;
+  max-width: 60%;
 }
 
 .prose h2 {

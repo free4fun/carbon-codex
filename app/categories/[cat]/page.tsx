@@ -1,5 +1,4 @@
 import { headers, cookies } from "next/headers";
-import SilentLink from "@/app/components/SilentLink";
 import CategoryPostCard from "@/app/components/CategoryPostCard";
 import Pagination from "@/app/components/Pagination";
 import { authors, categories, categoryTranslations, postGroups, posts, postGroupTags, tags } from "@/src/db/schema";

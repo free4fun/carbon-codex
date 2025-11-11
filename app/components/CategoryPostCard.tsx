@@ -2,11 +2,10 @@
 
 import SilentLink from "./SilentLink";
 import PostImage from "./PostImage";
-import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
-import { Clock } from "lucide-react";
+import { Clock, User } from "lucide-react";
 
 type Props = {
   post: {
@@ -101,24 +100,20 @@ export default function CategoryPostCard({ post }: Props) {
           <p className="text-sm md:text-lg text-text-gray line-clamp-2 group-hover:text-white">{post.description}</p>
         )}
 
-        {/* Meta row */}
         <div className="mt-auto flex items-center justify-between gap-3 text-xs">
           <div className="text-sm text-text-gray group-hover:text-white flex-shrink-0">
             {post.publishedAt ? formatDate(new Date(post.publishedAt), post.locale) : "Draft"}
           </div>
           <div className="text-text-gray group-hover:text-white hover:!text-magenta flex-shrink-0">
+           {/* Author */}
            {post.author?.name ? (
             <SilentLink
               href={`/authors/${post.author.slug}`}
               ariaLabel={post.author.name || undefined}
               stopPropagation
-              className="text-sm flex items-center gap-2"
+              className="text-sm link-effect-from-text flex items-center gap-2"
             >
-              <AuthorImage
-                src={post.author.avatarUrl}
-                alt={post.author.name || ""}
-                className="w-6 h-6 rounded-full object-cover border"
-              />
+              <User className="w-5 h-5" />
               <span>{post.author.name}</span>
             </SilentLink>
           ) : <span/>}

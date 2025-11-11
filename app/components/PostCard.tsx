@@ -2,11 +2,10 @@
 
 import SilentLink from "./SilentLink";
 import PostImage from "./PostImage";
-import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
-import { Clock } from "lucide-react";
+import { Clock, User } from "lucide-react";
 
 type Props = {
   post: {
@@ -55,7 +54,7 @@ export default function PostCard({ post }: Props) {
       onKeyDown={onKey}
       className="cursor-pointer border border-magenta/40 rounded-lg overflow-hidden bg-background hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-all group flex flex-col md:flex-row"
     >
-      {/* Image section - full width on mobile, left column on md+ */}
+      {/* Image */}
       <div className="w-full md:w-64 flex-shrink-0 flex flex-col">
         <div className="block relative flex-shrink-0">
           <div className="relative w-full aspect-video overflow-hidden">
@@ -66,7 +65,7 @@ export default function PostCard({ post }: Props) {
             />
             
           </div>
-          {/* Reading time badge on image - top right */}
+          {/* Reading time */}
           {post.readMinutes && (
             <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-sm flex items-center gap-1">
               <Clock size={14} className="inline-block" />
@@ -74,13 +73,13 @@ export default function PostCard({ post }: Props) {
             </div>
           )}
         </div>
-        
-        {/* Desktop: category/date anchored at bottom of the left column */}
-        <div className="hidden md:flex mt-auto p-2 flex-col gap-0.5 text-xs">
+        {/* Desktop only */}
+        <div className="hidden md:flex mt-auto p-2 flex-col gap-0.5 text-sm">
+          {/* Category */ }
           {post.category?.name && (
             <SilentLink
               href={`/categories/${post.category.slug}`}
-              className="text-base hover:!text-magenta transition-colors truncate uppercase tracking-wide font-semibold"
+              className="link-effect-from-magenta link-effect uppercase tracking-wide font-semibold text-lg"
               ariaLabel={post.category.name || undefined}
               stopPropagation
             >
@@ -88,14 +87,13 @@ export default function PostCard({ post }: Props) {
             </SilentLink>
           )}
           <div className="text-sm text-text-gray truncate group-hover:text-white">
+            {/* Date */ }
             {post.publishedAt
               ? formatDate(new Date(post.publishedAt), post.locale)
               : "Draft"}
           </div>
         </div>
       </div>
-      
-      {/* Content section - below image on mobile, right side on md+ */}
       <div className="p-3 flex flex-col flex-grow">
         {/* Title */}
         <div className="block mb-1">
@@ -103,8 +101,7 @@ export default function PostCard({ post }: Props) {
             {post.title}
           </h3>
         </div>
-
-        {/* Tags row */}
+        {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {post.tags.slice(0, 4).map((t) => (
@@ -120,7 +117,6 @@ export default function PostCard({ post }: Props) {
             ))}
           </div>
         )}
-
         {/* Description */}
         {post.description && (
           <div className="block mb-2">
@@ -129,10 +125,10 @@ export default function PostCard({ post }: Props) {
             </p>
           </div>
         )}
-
-        {/* Bottom row: mobile-only category/date (left) + author (right). Desktop shows only author (category/date in left column). */}
         <div className="mt-auto flex items-center justify-between gap-3 text-xs pt-1">
-          <div className="flex flex-col gap-1 min-w-0 md:hidden">
+          {/* Mobile Only */}
+          <div className="md:hidden flex flex-col gap-1 min-w-0">
+            {/* Category */ }
             {post.category?.name && (
               <SilentLink
                 href={`/categories/${post.category.slug}`}
@@ -144,19 +140,21 @@ export default function PostCard({ post }: Props) {
               </SilentLink>
             )}
             <div className="text-text-gray truncate">
+              {/* Date */ }
               {post.publishedAt
                 ? formatDate(new Date(post.publishedAt), post.locale)
                 : "Draft"}
             </div>
           </div>
+          {/* Author */}
           {post.author?.name && (
             <SilentLink 
               href={`/authors/${post.author.slug}`} 
-              className="flex items-center gap-1.5 text-text-gray hover:!text-magenta group-hover:text-white transition-colors flex-shrink-0 text-sm md:ml-auto"
+              className="flex items-center gap-1.5 link-effect-from-text text-lg md:ml-auto"
               ariaLabel={post.author.name || undefined}
               stopPropagation
             >
-              <AuthorImage src={post.author.avatarUrl} alt={post.author.name || ""} className="w-6 h-6 rounded-full object-cover border" />
+              <User className="w-5 h-5" />
               <span>{post.author.name}</span>
             </SilentLink>
           )}
