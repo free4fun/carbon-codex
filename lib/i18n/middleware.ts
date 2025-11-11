@@ -16,9 +16,11 @@ export function i18nMiddleware(request: NextRequest) {
     const locale = pathname.split('/')[1] as Locale;
     const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
     
-    const response = NextResponse.rewrite(
-      new URL(pathWithoutLocale, request.url)
-    );
+    // Preserve search params in the rewrite
+    const rewriteUrl = new URL(pathWithoutLocale, request.url);
+    rewriteUrl.search = request.nextUrl.search;
+    
+    const response = NextResponse.rewrite(rewriteUrl);
     
     // Add custom header with the locale for server components
     response.headers.set('x-locale', locale);
@@ -36,6 +38,7 @@ export function i18nMiddleware(request: NextRequest) {
   // Redirect to locale-prefixed URL
   const locale = getLocale(request);
   const newUrl = new URL(`/${locale}${pathname}`, request.url);
+  newUrl.search = request.nextUrl.search; // Preserve search params
   
   return NextResponse.redirect(newUrl);
 }

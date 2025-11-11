@@ -4,8 +4,7 @@
 :root {
   --background: #09090b;
   /* Surface uses magenta at 10% opacity over transparent */
-  --surface: rgba(var(--magenta-rgb), 0.1);
-
+  --surface-magenta: rgba(var(--magenta-rgb), 0.1);
   --cyan: #00F5FF;
   --cyan-rgb: 0, 245, 255;
   --magenta: #FF00E5;
@@ -13,10 +12,8 @@
   --violet: #A78BFA;
   --violet-rgb: 167, 139, 250;
   --text-gray: #CBD5E1;
-
   --text: #fafafa;
   --text-muted: #CBD5E1;
-
   --overlay-8: rgba(14,16,20,0.08);
   --overlay-16: rgba(14,16,20,0.16);
 }
@@ -25,6 +22,7 @@
   --color-background: var(--background);
   --color-foreground: var(--text);
   --color-surface: var(--surface);
+  --color-surface-magenta: var(--surface-magenta);
   --color-cyan: var(--cyan);
   --color-magenta: var(--magenta);
   --color-violet: var(--violet);
@@ -75,7 +73,7 @@ body {
 }
 
 .prose code {
-  background: var(--surface);
+  background: var(--surface-magenta);
   color: var(--magenta);
   padding: 0.15rem 0.35rem;
   border-radius: 0.25rem;
@@ -84,7 +82,7 @@ body {
 }
 
 .prose pre {
-  background: var(--surface);
+  background: var(--surface-magenta);
   border: 1px solid rgba(var(--magenta-rgb), 0.2);
   padding: 1rem;
   border-radius: 0.5rem;
@@ -113,7 +111,7 @@ body {
   line-height: 1.3;
   margin: 2rem 0 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(var(--magenta-rgb), 1.0);
+  border-bottom: 1px solid rgba(var(--magenta-rgb), 0.4);
 }
 
 .prose h3 {
@@ -217,7 +215,7 @@ body {
 }
 
 .prose thead {
-  background: var(--surface);
+  background: var(--surface-magenta);
 }
 
 .prose th {
@@ -239,7 +237,6 @@ body {
 /* Task list checkboxes */
 .prose input[type="checkbox"] {
   margin-right: 0.5rem;
-  cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   /* Maintain native size - approximately 1em to match text */
@@ -274,6 +271,7 @@ body {
 /* KaTeX math styling */
 .prose .katex {
   font-size: 1.1em;
+  color: var(--magenta);
 }
 
 .prose .katex-display {

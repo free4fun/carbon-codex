@@ -1,6 +1,8 @@
 "use client";
 
 import SilentLink from "./SilentLink";
+import PostImage from "./PostImage";
+import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
@@ -65,17 +67,15 @@ export default function FeaturedPostCard({ post }: Props) {
       <div className="block relative flex-shrink-0">
         {/* 16:9 aspect ratio container */}
         <div className="relative w-full aspect-video overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={post.coverUrl || "/carboncodex.svg"}
+          <PostImage
+            src={post.coverUrl}
             alt=""
             className="absolute inset-0 w-full h-full object-cover transform-gpu transition-transform duration-300 will-change-transform origin-center group-hover:scale-[1.2]"
-            loading="lazy"
           />
           
         </div>
         {post.readMinutes && (
-          <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs text-white flex items-center gap-1">
+          <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-sm text-white flex items-center gap-1">
             <Clock size={14} className="inline-block" />
             {post.readMinutes} {t["page.minRead"]}
           </div>
@@ -95,15 +95,16 @@ export default function FeaturedPostCard({ post }: Props) {
                   href={`/tags/${t.slug}`}
                   ariaLabel={t.name}
                   stopPropagation
-                  className="text-xs md:text-md font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-surface/40 border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
+                  className="text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
                 >
                   {t.name}
                 </SilentLink>
               ))}
             </div>
           )}
+          {/* Description */}
           {post.description && (
-            <p className="text-sm md:text-lg text-text-gray line-clamp-2">
+            <p className="text-sm md:text-lg group-hover:text-white text-text-gray line-clamp-2">
               {post.description}
             </p>
           )}
@@ -116,14 +117,14 @@ export default function FeaturedPostCard({ post }: Props) {
             {post.category?.name && (
               <SilentLink 
                 href={`/categories/${post.category.slug}`} 
-                className="hover:!text-magenta transition-colors uppercase tracking-wide font-semibold"
+                className="text-base hover:!text-magenta transition-colors uppercase tracking-wide font-semibold"
                 ariaLabel={post.category.name || undefined}
                 stopPropagation
               >
                 {post.category.name}
               </SilentLink>
             )}
-            <div className="text-text-gray">
+            <div className="text-sm group-hover:text-white text-text-gray">
               {post.publishedAt
                 ? formatDate(new Date(post.publishedAt), post.locale)
                 : "Draft"}
@@ -134,12 +135,11 @@ export default function FeaturedPostCard({ post }: Props) {
           {post.author?.name && (
             <SilentLink 
               href={`/authors/${post.author.slug}`} 
-              className="flex items-center gap-1.5 hover:!text-magenta transition-colors flex-shrink-0"
+              className="text-sm flex items-center gap-1.5 text-text-gray hover:!text-magenta group-hover:text-white transition-colors flex-shrink-0"
               ariaLabel={post.author.name || undefined}
               stopPropagation
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.author.avatarUrl || "/carboncodex.svg"} alt="" className="w-6 h-6 rounded-full object-cover border" />
+              <AuthorImage src={post.author.avatarUrl} alt={post.author.name || ""} className="w-6 h-6 rounded-full object-cover border" />
               <span>{post.author.name}</span>
             </SilentLink>
           )}

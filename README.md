@@ -44,7 +44,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
   - Active links show full **magenta** underline
   - Text color stays default (from CSS), no inline color changes on hover/active
   - **Root paths (`/`, `/en`, `/es`) never show as active** — no underline
-  - Active detection only works for sub-routes like `/collections`, `/writers`, `/survey`
+  - Active detection only works for sub-routes like `/categories`, `/writers`, `/survey`
   - Mobile menu with hamburger toggle and persistent state
 
 - **Reusable button classes in `app/globals.css`:**
@@ -53,7 +53,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 - **Available routes:**
   - `/{locale}` — Home page (no active nav state)
-  - `/{locale}/collections` — Collections page
+  - `/{locale}/categories` — Categories page
   - `/{locale}/writers` — Writers page
   - `/{locale}/survey` — Survey page
   

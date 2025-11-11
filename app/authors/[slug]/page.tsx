@@ -1,4 +1,5 @@
 import SilentLink from "../../components/SilentLink";
+import AuthorImage from "../../components/AuthorImage";
 import Image from "next/image";
 import { headers } from "next/headers";
 import { authors, authorTranslations, postGroups, posts } from "@/src/db/schema";
@@ -78,12 +79,7 @@ export default async function AuthorPage({
     <main className="px-6 py-10 max-w-6xl mx-auto">
       <div className="flex items-center gap-8 mb-10">
         <div className="relative h-24 w-24 md:h-28 md:w-28 rounded-full overflow-hidden bg-surface border border-violet/30 shadow-sm">
-          {author.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={author.avatarUrl} alt={author.name} className="h-full w-full object-cover" />
-          ) : (
-            <Image src="/carboncodex.svg" alt={author.name} fill className="object-contain p-4" />
-          )}
+          <AuthorImage src={author.avatarUrl} alt={author.name} className="h-full w-full object-cover" />
         </div>
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-cyan tracking-tight">{author.name}</h1>

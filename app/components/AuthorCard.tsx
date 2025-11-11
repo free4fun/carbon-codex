@@ -1,5 +1,6 @@
 "use client";
 
+import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
 
 export type Author = {
@@ -45,13 +46,7 @@ export default function AuthorCard({ author }: { author: Author }) {
     >
       <div className="flex items-center gap-4">
         <span className="relative inline-block h-14 w-14 rounded-full overflow-hidden bg-surface border">
-          {author.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={author.avatarUrl} alt={author.name} className="h-full w-full object-cover" />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src="/carboncodex.svg" alt={author.name} className="p-2" />
-          )}
+          <AuthorImage src={author.avatarUrl} alt={author.name} className="h-full w-full object-cover" />
         </span>
         <div className="flex-1 min-w-0">
           <div className="font-semibold group-hover:text-magenta transition-colors truncate">{author.name}</div>

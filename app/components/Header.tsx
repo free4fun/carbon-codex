@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 // Replaced next/link usages with SilentLink for programmatic navigation without status bar URLs
 import SilentLink from "./SilentLink";
 import Image from "next/image";
-import { Globe } from "lucide-react";
+import { Globe, Menu, X } from "lucide-react";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
 
@@ -94,9 +94,9 @@ export default function Header() {
   // Navigation links configuration
   const navLinks: NavLinkItem[] = [
     {
-      href: "/collections",
+      href: "/categories",
       label: t["nav.categories"],
-      isActive: isActive("/collections"),
+      isActive: isActive("/categories"),
     },
     {
       href: "/writers",
@@ -173,21 +173,13 @@ export default function Header() {
           <button
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
-            className="p-2 rounded-md border border-violet"
+            className="p-2 rounded-md border border-magenta flex items-center justify-center"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            {menuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
           </button>
         </div>
       </div>
@@ -208,15 +200,13 @@ export default function Header() {
             <div className="flex items-center gap-2">
               <button
                 onClick={toggleLang}
-                className="px-3 py-1 rounded text-sm bg-transparent w-28 flex items-center gap-2 justify-center transition-all border border-violet hover:border-magenta text-foreground"
+                className="px-3 py-1 rounded text-sm bg-transparent w-28 flex items-center gap-2 justify-center transition-all border border-magenta hover:border-magenta text-foreground"
                 aria-label="Toggle language"
               >
                 <Globe className="w-4 h-4" />
                 <span className="text-sm">{locale === "en" ? t["spanish"] : t["english"]}</span>
               </button>
-              <span className="text-xs text-text-gray">
-                {t["nav.language"]}
-              </span>
+              
             </div>
           </li>
         </ul>

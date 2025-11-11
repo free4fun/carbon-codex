@@ -1,6 +1,8 @@
 "use client";
 
 import SilentLink from "./SilentLink";
+import PostImage from "./PostImage";
+import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
@@ -22,26 +24,15 @@ type Props = {
 };
 
 function formatDate(date: Date, locale: string): string {
-  const monthsES = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-  ];
-  
-  const monthsEN = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  
-  const day = date.getDate();
-  const month = date.getMonth();
-  const year = date.getFullYear();
-  
-  if (locale === "es") {
-    // Formato: dd de mes de año
-    return `${day} de ${monthsES[month]} de ${year}`;
-  } else {
-    // Formato: Month dd, year
-    return `${monthsEN[month]} ${day}, ${year}`;
+   try {
+    return new Intl.DateTimeFormat(locale === "es" ? "es-ES" : "en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  } catch {
+    // Fallback simple si Intl falla por alguna razón
+    return date.toISOString().slice(0, 10);
   }
 }
 
@@ -65,22 +56,20 @@ export default function PostCard({ post }: Props) {
       className="cursor-pointer border border-magenta/40 rounded-lg overflow-hidden bg-background hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-all group flex flex-col md:flex-row"
     >
       {/* Image section - full width on mobile, left column on md+ */}
-      <div className="w-full md:w-56 flex-shrink-0 flex flex-col">
+      <div className="w-full md:w-64 flex-shrink-0 flex flex-col">
         <div className="block relative flex-shrink-0">
           <div className="relative w-full aspect-video overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={post.coverUrl || "/carboncodex.svg"}
+            <PostImage
+              src={post.coverUrl}
               alt=""
               className="absolute inset-0 w-full h-full object-cover transform-gpu transition-transform duration-300 will-change-transform origin-center group-hover:scale-[1.2]"
-              loading="lazy"
             />
             
           </div>
           {/* Reading time badge on image - top right */}
           {post.readMinutes && (
-            <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-xs flex items-center gap-1">
-              <Clock size={12} className="inline-block" />
+            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-sm flex items-center gap-1">
+              <Clock size={14} className="inline-block" />
               {post.readMinutes} {t["page.minRead"]}
             </div>
           )}
@@ -91,14 +80,14 @@ export default function PostCard({ post }: Props) {
           {post.category?.name && (
             <SilentLink
               href={`/categories/${post.category.slug}`}
-              className="hover:!text-magenta transition-colors truncate uppercase font-semibold"
+              className="text-base hover:!text-magenta transition-colors truncate uppercase tracking-wide font-semibold"
               ariaLabel={post.category.name || undefined}
               stopPropagation
             >
               {post.category.name}
             </SilentLink>
           )}
-          <div className="text-text-gray truncate">
+          <div className="text-sm text-text-gray truncate group-hover:text-white">
             {post.publishedAt
               ? formatDate(new Date(post.publishedAt), post.locale)
               : "Draft"}
@@ -124,7 +113,7 @@ export default function PostCard({ post }: Props) {
                 href={`/tags/${t.slug}`}
                 ariaLabel={t.name}
                 stopPropagation
-                className="text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-surface/40 border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
+                className="text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
               >
                 {t.name}
               </SilentLink>
@@ -135,7 +124,7 @@ export default function PostCard({ post }: Props) {
         {/* Description */}
         {post.description && (
           <div className="block mb-2">
-            <p className="text-sm text-text-gray line-clamp-2">
+            <p className="text-sm text-text-gray group-hover:text-white line-clamp-2">
               {post.description}
             </p>
           </div>
@@ -147,7 +136,7 @@ export default function PostCard({ post }: Props) {
             {post.category?.name && (
               <SilentLink
                 href={`/categories/${post.category.slug}`}
-                className="hover:!text-magenta transition-colors truncate uppercase tracking-wide font-semibold"
+                className="hover:!text-magenta transition-colors truncate uppercase tracking-wide font-semibold text-sm"
                 ariaLabel={post.category.name || undefined}
                 stopPropagation
               >
@@ -163,12 +152,11 @@ export default function PostCard({ post }: Props) {
           {post.author?.name && (
             <SilentLink 
               href={`/authors/${post.author.slug}`} 
-              className="flex items-center gap-1.5 hover:!text-magenta transition-colors flex-shrink-0 md:ml-auto"
+              className="flex items-center gap-1.5 text-text-gray hover:!text-magenta group-hover:text-white transition-colors flex-shrink-0 text-sm md:ml-auto"
               ariaLabel={post.author.name || undefined}
               stopPropagation
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.author.avatarUrl || "/carboncodex.svg"} alt="" className="w-6 h-6 rounded-full object-cover border" />
+              <AuthorImage src={post.author.avatarUrl} alt={post.author.name || ""} className="w-6 h-6 rounded-full object-cover border" />
               <span>{post.author.name}</span>
             </SilentLink>
           )}
