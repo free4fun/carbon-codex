@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from '@iconify/react';
 
 import { usePathname } from "next/navigation";
 import SilentLink from "./SilentLink";
@@ -21,7 +22,7 @@ export default function Footer() {
           <div className="flex justify-center items-center">
             <span className="text-sm flex items-center gap-1">
               <SilentLink href="/" ariaLabel={t.siteName} className="text-magenta font-semibold">{t.siteName}</SilentLink>
-              <Copyright className="w-4 h-4" aria-hidden="true" /> {currentYear}. {t["footer.rights"]}.
+              <Icon icon="tabler:copyright" className="inline w-4.5 h-4.5" aria-hidden="true" /> {currentYear}. {t["footer.rights"]}.
             </span>
           </div>
         </div>

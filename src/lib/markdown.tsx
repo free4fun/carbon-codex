@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
-import { ExternalLink, LucideSquareArrowLeft } from "lucide-react";
+import { Icon } from '@iconify/react';
 
 type Props = {
   children: string;
@@ -39,9 +39,9 @@ export function Markdown({ children, className }: Props) {
                 >
                   {props.children}
                   {isExternal ? (
-                    <ExternalLink className="inline-block w-3.5 h-3.5 ml-0.5 align-baseline" style={{ color: 'inherit' }} />
+                    <Icon icon="mdi:open-in-new" className="inline-block w-3.5 h-3.5 ml-0.5 align-baseline" style={{ color: 'inherit' }} />
                   ) : (
-                    <LucideSquareArrowLeft className="inline-block w-3.5 h-3.5 ml-0.5 align-baseline" style={{ color: 'inherit' }} />
+                    <Icon icon="mdi:arrow-left-box" className="inline-block w-3.5 h-3.5 ml-0.5 align-baseline" style={{ color: 'inherit' }} />
                   )}
                 </a>
               </span>

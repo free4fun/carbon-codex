@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 // Replaced next/link usages with SilentLink for programmatic navigation without status bar URLs
 import SilentLink from "./SilentLink";
 import Image from "next/image";
-import { Globe, Menu, X } from "lucide-react";
+import { Icon } from '@iconify/react';
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
 
@@ -21,7 +21,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  
+
   // Extract locale from pathname (e.g., /en/... or /es/...)
   const locale: Locale = pathname.startsWith("/es") ? "es" : "en";
   const t = locale === "en" ? en : es;
@@ -46,7 +46,7 @@ export default function Header() {
 
   const toggleLang = () => {
     const newLocale = locale === "en" ? "es" : "en";
-    
+
     // Get the current path without the locale prefix
     let pathWithoutLocale = pathname;
     if (pathname.startsWith("/en/")) {
@@ -56,10 +56,10 @@ export default function Header() {
     } else if (pathname === "/en" || pathname === "/es") {
       pathWithoutLocale = "/";
     }
-    
+
     // Construct new URL with new locale
     const newPath = `/${newLocale}${pathWithoutLocale}`;
-    
+
     // Navigate to the new URL
     window.location.href = newPath;
   };
@@ -161,7 +161,7 @@ export default function Header() {
                 className="font-semibold ml-2 px-3 py-1 rounded text-sm bg-transparent flex items-center gap-2 border border-magenta btn-fill-hover"
                 title={locale === "en" ? t["spanish"] : t["english"]}
               >
-                <Globe className="w-4 h-4" />
+                <Icon icon="tabler:world" className="w-4.5 h-4.5" />
                 <span>{locale === "en" ? t["spanish"] : t["english"]}</span>
               </button>
             </li>
@@ -176,9 +176,9 @@ export default function Header() {
             className="p-2 rounded-md border border-magenta flex items-center justify-center"
           >
             {menuOpen ? (
-              <X className="w-5 h-5" />
+              <Icon icon="tabler:x" className="w-4.5 h-4.5" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Icon icon="tabler:menu-2" className="w-4.5 h-4.5" />
             )}
           </button>
         </div>
@@ -186,9 +186,8 @@ export default function Header() {
 
       {/* Mobile menu panel - animated */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-300 transform px-6 pb-4 ${
-          menuOpen ? "max-h-60 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2"
-        }`}
+        className={`md:hidden overflow-hidden transition-all duration-300 transform px-6 pb-4 ${menuOpen ? "max-h-60 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2"
+          }`}
       >
         <ul className="flex flex-col gap-3 text-sm">
           {navLinks.map((link) => (
@@ -203,10 +202,10 @@ export default function Header() {
                 className="px-3 py-1 rounded text-sm bg-transparent w-28 flex items-center gap-2 justify-center transition-all border border-magenta hover:border-magenta text-foreground"
                 aria-label="Toggle language"
               >
-                <Globe className="w-4 h-4" />
+                <Icon icon="tabler:world" className="w-4.5 h-4.5" />
                 <span className="text-sm">{locale === "en" ? t["spanish"] : t["english"]}</span>
               </button>
-              
+
             </div>
           </li>
         </ul>

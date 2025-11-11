@@ -5,7 +5,7 @@ import PostImage from "./PostImage";
 import { useRouter } from "next/navigation";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
-import { Clock, User } from "lucide-react";
+import { Icon } from '@iconify/react';
 
 type Props = {
   post: {
@@ -52,21 +52,19 @@ export default function FeaturedPostCard({ post }: Props) {
       aria-label={post.title}
       onClick={goToPost}
       onKeyDown={onKey}
-      className="cursor-pointer border border-magenta/40 rounded-lg overflow-hidden bg-background hover:border-magenta shadow-[0_2px_10px_-2px_rgba(var(--magenta-rgb),0.18),0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_20px_-2px_rgba(var(--magenta-rgb),0.35),0_2px_8px_rgba(0,0,0,0.2)] transition-all group h-full flex flex-col"
+      className="cursor-pointer border border-magenta/40 rounded-lg overflow-hidden bg-surface hover:border-magenta shadow-[0_2px_10px_-2px_rgba(var(--magenta-rgb),0.18),0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_20px_-2px_rgba(var(--magenta-rgb),0.35),0_2px_8px_rgba(0,0,0,0.2)] transition-all group h-full flex flex-col"
     >
       <div className="block relative flex-shrink-0">
-        {/* 16:9 aspect ratio container */}
         <div className="relative w-full aspect-video overflow-hidden">
           <PostImage
             src={post.coverUrl}
             alt=""
             className="absolute inset-0 w-full h-full object-cover transform-gpu transition-transform duration-300 will-change-transform origin-center group-hover:scale-[1.2]"
           />
-          
         </div>
         {post.readMinutes && (
           <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-sm text-white flex items-center gap-1">
-            <Clock size={14} className="inline-block" />
+            <Icon icon="tabler:clock" className="w-4.5 h-4.5" />
             {post.readMinutes} {t["page.minRead"]}
           </div>
         )}
@@ -85,8 +83,9 @@ export default function FeaturedPostCard({ post }: Props) {
                   href={`/tags/${t.slug}`}
                   ariaLabel={t.name}
                   stopPropagation
-                  className="text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
+                  className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
                 >
+                  <Icon icon="tabler:tags" className="w-4.5 h-4.5" />
                   {t.name}
                 </SilentLink>
               ))}
@@ -114,7 +113,8 @@ export default function FeaturedPostCard({ post }: Props) {
                 {post.category.name}
               </SilentLink>
             )}
-            <div className="text-sm group-hover:text-white text-text-gray">
+            <div className="flex items-center gap-1 text-sm group-hover:text-white text-text-gray">
+              <Icon icon="tabler:calendar-week" className="w-4.5 h-4.5" />
               {post.publishedAt
                 ? formatDate(new Date(post.publishedAt), post.locale)
                 : "Draft"}
@@ -129,7 +129,7 @@ export default function FeaturedPostCard({ post }: Props) {
               ariaLabel={post.author.name || undefined}
               stopPropagation
             >
-              <User className="w-5 h-5" />
+                <Icon icon="tabler:user" className="w-4.5 h-4.5" />
               <span className="text-lg">{post.author.name}</span>
             </SilentLink>
           )}

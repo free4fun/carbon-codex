@@ -1,3 +1,114 @@
+export async function getAuthorWithTranslation(slug: string, locale: string) {
+  const { db } = await import("@/src/db/client");
+  const { authors, authorTranslations } = await import("@/src/db/schema");
+  const rows = await db
+    .select({
+      id: authors.id,
+      slug: authors.slug,
+      name: authors.name,
+      bio: authors.bio,
+      avatarUrl: authors.avatarUrl,
+      websiteUrl: authors.websiteUrl,
+      linkedinUrl: authors.linkedinUrl,
+      githubUrl: authors.githubUrl,
+      xUrl: authors.xUrl,
+      translatedBio: authorTranslations.bio,
+    })
+    .from(authors)
+    .leftJoin(
+      authorTranslations,
+      and(
+        eq(authorTranslations.authorId, authors.id),
+        eq(authorTranslations.locale, locale)
+      )
+    )
+    .where(eq(authors.slug, slug))
+    .limit(1);
+  if (!rows[0]) return null;
+  return {
+    id: rows[0].id,
+    slug: rows[0].slug,
+    name: rows[0].name,
+    bio: rows[0].translatedBio || rows[0].bio,
+    avatarUrl: rows[0].avatarUrl,
+    websiteUrl: rows[0].websiteUrl,
+    linkedinUrl: rows[0].linkedinUrl,
+    githubUrl: rows[0].githubUrl,
+    xUrl: rows[0].xUrl,
+  };
+}
+export async function getCategoryWithTranslation(slug: string, locale: string) {
+  const { db } = await import("@/src/db/client");
+  const { categories, categoryTranslations } = await import("@/src/db/schema");
+  const rows = await db
+    .select({
+      id: categories.id,
+      slug: categories.slug,
+      name: categories.name,
+      description: categories.description,
+      imageUrl: categories.imageUrl,
+      translatedName: categoryTranslations.name,
+      translatedDescription: categoryTranslations.description,
+    })
+    .from(categories)
+    .leftJoin(
+      categoryTranslations,
+      and(
+        eq(categoryTranslations.categoryId, categories.id),
+        eq(categoryTranslations.locale, locale)
+      )
+    )
+    .where(eq(categories.slug, slug))
+    .limit(1);
+  if (!rows[0]) return null;
+  return {
+    id: rows[0].id,
+    slug: rows[0].slug,
+    name: rows[0].translatedName || rows[0].name,
+    description: rows[0].translatedDescription || rows[0].description,
+    imageUrl: rows[0].imageUrl,
+  };
+}
+// Helper: fetch tags for groupIds
+async function fetchTagsForGroups(groupIds: number[]): Promise<Record<number, { slug: string; name: string }[]>> {
+  if (!groupIds.length) return {};
+  const tagRows = await db
+    .select({
+      groupId: postGroupTags.groupId,
+      slug: tags.slug,
+      name: tags.name,
+    })
+    .from(postGroupTags)
+    .innerJoin(tags, eq(postGroupTags.tagId, tags.id))
+    .where(inArray(postGroupTags.groupId, groupIds));
+  return tagRows.reduce((acc, tr) => {
+    const gid = tr.groupId as number;
+    if (!acc[gid]) acc[gid] = [];
+    acc[gid].push({ slug: tr.slug, name: tr.name });
+    return acc;
+  }, {} as Record<number, { slug: string; name: string }[]>);
+}
+
+// Helper: map post rows to PostSummary
+function mapPostRows(rows: any[], tagMap: Record<number, { slug: string; name: string }[]>): PostSummary[] {
+  return rows.map((r) => ({
+    groupId: r.groupId,
+    slug: r.slug,
+    title: r.title,
+    description: r.description,
+    locale: r.locale,
+    coverUrl: r.coverUrl,
+    readMinutes: r.readMinutes ? Number(r.readMinutes) : null,
+    author: { slug: r.authorSlug, name: r.authorName, avatarUrl: r.authorAvatarUrl },
+    category: {
+      slug: typeof r.catSlug !== "undefined" ? r.catSlug ?? null : null,
+      name: typeof r.catName !== "undefined" ? r.catName ?? null : null,
+      imageUrl: typeof r.catImageUrl !== "undefined" ? r.catImageUrl ?? null : null,
+    },
+    publishedAt: r.publishedAt,
+    tags: r.groupId ? tagMap[r.groupId] || [] : [],
+  }));
+}
 import "server-only";
 import { db } from "@/src/db/client";
 import {
@@ -59,45 +170,11 @@ export async function getLatestPosts(locale: string, limit = 10, cursor?: string
     .orderBy(desc(posts.publishedAt))
     .limit(limit);
 
-  // Fetch tags for these posts in one query
   const groupIds = rows.map((r) => r.groupId).filter(Boolean) as number[];
-  let tagMap: Record<number, { slug: string; name: string }[]> = {};
-  if (groupIds.length > 0) {
-    const tagRows = await db
-      .select({
-        groupId: postGroupTags.groupId,
-        slug: tags.slug,
-        name: tags.name,
-      })
-      .from(postGroupTags)
-      .innerJoin(tags, eq(postGroupTags.tagId, tags.id))
-      .where(inArray(postGroupTags.groupId, groupIds));
-
-    tagMap = tagRows.reduce((acc, tr) => {
-      const gid = tr.groupId as number;
-      if (!acc[gid]) acc[gid] = [];
-      acc[gid].push({ slug: tr.slug, name: tr.name });
-      return acc;
-    }, {} as Record<number, { slug: string; name: string }[]>);
-  }
-
-  const nextCursor =
-    rows.length === limit ? rows[rows.length - 1].publishedAt?.toISOString() : null;
-
+  const tagMap = await fetchTagsForGroups(groupIds);
+  const nextCursor = rows.length === limit ? rows[rows.length - 1].publishedAt?.toISOString() : null;
   return {
-    items: rows.map((r) => ({
-      groupId: r.groupId,
-      slug: r.slug,
-      title: r.title,
-      description: r.description,
-      locale: r.locale,
-      coverUrl: r.coverUrl,
-      readMinutes: r.readMinutes ? Number(r.readMinutes) : null,
-      author: { slug: r.authorSlug, name: r.authorName, avatarUrl: r.authorAvatarUrl },
-      category: { slug: r.catSlug, name: r.catName, imageUrl: r.catImageUrl },
-      publishedAt: r.publishedAt,
-      tags: r.groupId ? tagMap[r.groupId] || [] : [],
-    })) as PostSummary[],
+    items: mapPostRows(rows, tagMap),
     nextCursor,
   };
 }
@@ -311,4 +388,75 @@ export async function searchPosts(locale: string, q: string, limit = 20) {
   `);
 
   return rows.rows;
+}
+
+export async function getPostsByAuthorWithTags(authorId: number, locale: string) {
+  const { db } = await import("@/src/db/client");
+  const { postGroups, posts, authors, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
+  const items = await db
+    .select({
+      groupId: postGroups.id,
+      slug: postGroups.slug,
+      title: posts.title,
+      description: posts.description,
+      locale: posts.locale,
+      coverUrl: postGroups.coverUrl,
+      readMinutes: posts.readMinutes,
+      publishedAt: posts.publishedAt,
+      authorSlug: authors.slug,
+      authorName: authors.name,
+      authorAvatarUrl: authors.avatarUrl,
+      catSlug: sql<string>`NULL`,
+      catName: sql<string>`NULL`,
+      catImageUrl: sql<string>`NULL`,
+    })
+    .from(posts)
+    .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
+    .innerJoin(authors, eq(postGroups.authorId, authors.id))
+    .where(and(eq(postGroups.authorId, authorId), eq(posts.locale, locale), eq(posts.draft, false), sql`posts.published_at IS NOT NULL`))
+    .orderBy(desc(posts.publishedAt));
+  const groupIds = items.map((p) => p.groupId);
+  const tagMap = await fetchTagsForGroups(groupIds);
+  return mapPostRows(items, tagMap);
+}
+
+export async function getPostsByCategoryWithTags({ slug, locale, offset, limit }: { slug: string, locale: string, offset: number, limit: number }) {
+  const { db } = await import("@/src/db/client");
+  const { authors, categories, postGroups, posts, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
+  const items = await db
+    .selectDistinctOn([postGroups.id], {
+      groupId: postGroups.id,
+      slug: postGroups.slug,
+      title: posts.title,
+      description: posts.description,
+      locale: posts.locale,
+      coverUrl: postGroups.coverUrl,
+      readMinutes: posts.readMinutes,
+      publishedAt: posts.publishedAt,
+      authorSlug: authors.slug,
+      authorName: authors.name,
+      authorAvatarUrl: authors.avatarUrl,
+      catSlug: categories.slug,
+      catName: categories.name,
+      catImageUrl: categories.imageUrl,
+      catDescription: categories.description,
+    })
+    .from(posts)
+    .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
+  .innerJoin(categories, eq(postGroups.categoryId, categories.id))
+  .innerJoin(authors, eq(postGroups.authorId, authors.id))
+    .where(
+      and(
+        eq(categories.slug, slug),
+        eq(posts.locale, locale),
+        eq(posts.draft, false),
+        sql`posts.published_at IS NOT NULL`
+      )
+    )
+    .orderBy(postGroups.id, desc(posts.publishedAt))
+    .limit(limit)
+    .offset(offset);
+  const groupIds = items.map((p: any) => p.groupId).filter((id: number) => id);
+  const tagMap = await fetchTagsForGroups(groupIds);
+  return mapPostRows(items, tagMap);
 }

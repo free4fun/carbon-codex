@@ -3,10 +3,10 @@ import CategoryImage from "./components/CategoryImage";
 import { headers } from "next/headers";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
-import { Search } from "lucide-react";
 import PostCard from "@/app/components/PostCard";
 import FeaturedPostCard from "@/app/components/FeaturedPostCard";
 import { getLatestPosts, getCategories } from "@/src/lib/blog";
+import { Icon } from '@iconify/react';
 
 type Locale = "en" | "es";
 
@@ -52,7 +52,7 @@ export default async function Home() {
               ariaLabel={t["home.viewAllPosts"]}
               className="inline-block px-5 md:px-6 py-2.5 md:py-3 bg-magenta md:bg-magenta/20 border border-magenta btn-fill-hover transition-colors rounded-lg font-semibold text-sm md:text-base"
             >
-              {t["home.viewAllPosts"]}
+              {t["home.viewAllPosts"]}<Icon icon="tabler:arrow-right" className="h-4.5 w-4.5 inline-block ml-1"/>
             </SilentLink>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default async function Home() {
               className="w-full px-4 md:px-6 py-3 md:py-4 text-sm md:text-base focus:outline-none placeholder:text-text-gray"
             />
             <button className="absolute right-2 top-1/2 -translate-y-1/2 px-4 md:px-6 py-2 border border-magenta bg-magenta md:bg-magenta/20 hover:bg-magenta transition-colors rounded-lg font-semibold text-sm md:text-base inline-flex items-center justify-center">
-              <Search className="h-4 w-4" aria-hidden="true" />
+                <Icon icon="tabler:search" className="h-4.5 w-4.5" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default async function Home() {
                 key={category.slug}
                 href={`/categories/${category.slug}`}
                 ariaLabel={category.name}
-                className="group overflow-hidden flex flex-col rounded-lg border border-magenta/40 focus:border-magenta hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-colors transition-all group"
+                className="bg-surface group overflow-hidden flex flex-col rounded-lg border border-magenta/40 focus:border-magenta hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-colors transition-all group"
               >
                 <div className="relative w-full overflow-hidden pb-[50%]">
                   <CategoryImage
@@ -109,7 +109,7 @@ export default async function Home() {
                     <h3 className="text-sm md:text-xl font-semibold group-hover:text-magenta transition-colors leading-tight">
                       {category.name}
                     </h3>
-                    <span className="text-xs group-hover:text-magenta  whitespace-nowrap">
+                    <span className="text-xs group-hover:text-magenta whitespace-nowrap">
                       {category.count} {t["page.articles"]}
                     </span>
                   </div>
@@ -139,7 +139,7 @@ export default async function Home() {
             ariaLabel={t["home.takeSurvey"]}
             className="inline-block px-6 md:px-8 py-3 md:py-4 bg-magenta md:bg-magenta/20 border border-magenta btn-fill-hover transition-colors rounded-lg font-semibold text-sm md:text-base"
           >
-            {t["home.takeSurvey"]} →
+            {t["home.takeSurvey"]}<Icon icon="tabler:arrow-right" className="h-4.5 w-4.5 inline-block ml-1"/>
           </SilentLink>
         </div>
       </section>

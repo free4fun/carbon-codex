@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
+import { Icon } from '@iconify/react';
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Props = {
@@ -67,7 +68,7 @@ export default function Pagination({ slug, currentPage, totalPages, locale }: Pr
         className="flex items-center gap-1 px-3 py-2 rounded-lg transition-all font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-magenta/10 border border-transparent hover:border-magenta/40 disabled:hover:bg-transparent disabled:hover:border-transparent"
         aria-label={locale === "es" ? "Página anterior" : "Previous page"}
       >
-        <ChevronLeft className="w-4 h-4" />
+        <Icon icon="mdi:chevron-left" className="w-4 h-4" />
         <span className="hidden sm:inline">{locale === "es" ? "Anterior" : "Previous"}</span>
       </button>
 
@@ -105,7 +106,7 @@ export default function Pagination({ slug, currentPage, totalPages, locale }: Pr
         aria-label={locale === "es" ? "Página siguiente" : "Next page"}
       >
         <span className="hidden sm:inline">{locale === "es" ? "Siguiente" : "Next"}</span>
-        <ChevronRight className="w-4 h-4" />
+        <Icon icon="mdi:chevron-right" className="w-4 h-4" />
       </button>
     </nav>
   );

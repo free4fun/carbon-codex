@@ -10,6 +10,8 @@ interface SilentLinkProps {
   ariaLabel?: string;
   onNavigate?: () => void; // optional callback after navigation
   stopPropagation?: boolean; // if true, stop event bubbling (for nested interactive zones)
+  target?: string;
+  rel?: string;
 }
 
 /**
@@ -25,13 +27,22 @@ export default function SilentLink({
   ariaLabel,
   onNavigate,
   stopPropagation = false,
+  target,
+  rel
 }: SilentLinkProps) {
   const router = useRouter();
 
+  const isExternal = href.startsWith("http://") || href.startsWith("https://");
+
   const handleActivate = (e: MouseEvent | KeyboardEvent) => {
     if (stopPropagation) e.stopPropagation();
-    onNavigate?.();
-    router.push(href);
+    if (isExternal && onNavigate) {
+      onNavigate();
+    } else if (isExternal) {
+      // Let <a> handle navigation
+    } else {
+      router.push(href);
+    }
   };
 
   const handleKey = (e: KeyboardEvent) => {
@@ -41,6 +52,20 @@ export default function SilentLink({
     }
   };
 
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        className={"cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-magenta focus-visible:ring-offset-2 " + className}
+        aria-label={ariaLabel}
+        target={target || "_blank"}
+        rel={rel || "noopener noreferrer"}
+        onClick={onNavigate}
+      >
+        {children}
+      </a>
+    );
+  }
   return (
     <span
       role="link"

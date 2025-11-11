@@ -1,7 +1,8 @@
 "use client";
-
 import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
+import { Icon } from '@iconify/react';
+import SilentLink from "./SilentLink";
 
 export type Author = {
   slug: string;
@@ -23,17 +24,13 @@ function normalizeUrl(url?: string | null) {
 
 export default function AuthorCard({ author }: { author: Author }) {
   const router = useRouter();
-  const go = () => router.push(`/authors/${author.slug}`);
+  const go = () => router.push(`/writers/${author.slug}`);
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       go();
     }
   };
-
-  const bio = author.bio
-    ? author.bio.slice(0, 150) + (author.bio.length > 150 ? "…" : "")
-    : null;
 
   return (
     <div
@@ -42,64 +39,67 @@ export default function AuthorCard({ author }: { author: Author }) {
       aria-label={author.name}
       onClick={go}
       onKeyDown={onKey}
-      className="cursor-pointer group p-5 bg-surface/50 border border-violet/20 rounded-lg hover:border-magenta transition-all flex flex-col gap-4"
+      className="cursor-pointer group bg-surface border border-magenta/40 rounded-lg hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-all flex flex-col overflow-hidden shadow-lg"
     >
-      <div className="flex items-center gap-4">
-        <span className="relative inline-block h-14 w-14 rounded-full overflow-hidden bg-surface border">
-          <AuthorImage src={author.avatarUrl} alt={author.name} className="h-full w-full object-cover" />
-        </span>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold group-hover:text-magenta transition-colors truncate">{author.name}</div>
-          <div className="text-xs text-violet">{author.count} articles</div>
-        </div>
+      {/* Image con efecto zoom al hover */}
+      <div className="w-full aspect-video bg-surface relative overflow-hidden">
+        <AuthorImage src={author.avatarUrl} alt={author.name} className="w-full h-full object-cover object-top rounded-t-lg transition-transform duration-300 group-hover:scale-[1.2]" />
       </div>
-      {bio && (
-        <p className="text-xs text-text-gray leading-relaxed line-clamp-4">{bio}</p>
-      )}
-      <div className="flex flex-wrap gap-2 mt-1 text-[11px]">
+      <div className="flex flex-col px-4 pt-4 pb-3 gap-2 flex-1">
+        <div className="flex items-center justify-between mb-1 w-full">
+          <span className="font-semibold text-2xl transition-colors truncate link-effect-from-text">{author.name}</span>
+          <span className="text-lg text-text-gray group-hover:text-magenta flex items-center gap-1"><Icon icon="tabler:bookmarks" className="h-4.5 w-4.5 inline-block"/> {author.count} {author.count === 1 ? 'article' : 'articles'}</span>
+        </div>
+        {author.bio && (
+          <p className="text-md text-white leading-relaxed line-clamp-4 text-left">{author.bio}</p>
+        )}
+      </div>
+      {/* Social Links */}
+      <div className="flex flex-wrap justify-center gap-2 px-4 pb-4 text-xs">
+        {/* Solo SilentLink, sin duplicados */}
         {author.websiteUrl && (
-          <a
-            href={normalizeUrl(author.websiteUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="px-2 py-1 bg-surface border rounded-md group-hover:border-magenta transition-colors hover:text-magenta"
+          <SilentLink
+            href={normalizeUrl(author.websiteUrl) ?? "#"}
+            ariaLabel="Website"
+            stopPropagation
+            className="px-2 py-1 bg-surface border border-magenta  rounded-lg btn-fill-hover flex items-center gap-1"
+            onNavigate={() => window.open(normalizeUrl(author.websiteUrl), "_blank")}
           >
-            Website
-          </a>
+            <Icon icon="tabler:link" className="h-4.5 w-4.5 inline-block" /> Website
+          </SilentLink>
         )}
         {author.linkedinUrl && (
-          <a
-            href={normalizeUrl(author.linkedinUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="px-2 py-1 bg-surface border rounded-md group-hover:border-magenta transition-colors hover:text-magenta"
+          <SilentLink
+            href={normalizeUrl(author.linkedinUrl) ?? "#"}
+            ariaLabel="LinkedIn"
+            stopPropagation
+            className="px-2 py-1 bg-surface border border-magenta  rounded-lg btn-fill-hover flex items-center gap-1"
+            onNavigate={() => window.open(normalizeUrl(author.linkedinUrl), "_blank")}
           >
-            LinkedIn
-          </a>
+            <Icon icon="tabler:brand-linkedin" className="h-4.5 w-4.5 inline-block" /> LinkedIn
+          </SilentLink>
         )}
         {author.githubUrl && (
-          <a
-            href={normalizeUrl(author.githubUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="px-2 py-1 bg-surface border rounded-md group-hover:border-magenta transition-colors hover:text-magenta"
+          <SilentLink
+            href={normalizeUrl(author.githubUrl) ?? "#"}
+            ariaLabel="GitHub"
+            stopPropagation
+            className="px-2 py-1 bg-surface border border-magenta  rounded-lg btn-fill-hover flex items-center gap-1"
+            onNavigate={() => window.open(normalizeUrl(author.githubUrl), "_blank")}
           >
-            GitHub
-          </a>
+            <Icon icon="tabler:brand-github" className="h-4.5 w-4.5 inline-block" /> GitHub
+          </SilentLink>
         )}
         {author.xUrl && (
-          <a
-            href={normalizeUrl(author.xUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="px-2 py-1 bg-surface border rounded-md group-hover:border-magenta transition-colors hover:text-magenta"
+          <SilentLink
+            href={normalizeUrl(author.xUrl) ?? "#"}
+            ariaLabel="X"
+            stopPropagation
+            className="px-2 py-1 bg-surface border border-magenta  rounded-lg btn-fill-hover flex items-center gap-1"
+            onNavigate={() => window.open(normalizeUrl(author.xUrl), "_blank")}
           >
-            X
-          </a>
+            <Icon icon="tabler:brand-x" className="h-4.5 w-4.5 inline-block" /> Twitter
+          </SilentLink>
         )}
       </div>
     </div>

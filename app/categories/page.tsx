@@ -1,5 +1,6 @@
 import SilentLink from "../components/SilentLink";
 import CategoryImage from "../components/CategoryImage";
+import { Icon } from '@iconify/react';
 import { headers } from "next/headers";
 import { getCategories } from "@/src/lib/blog";
 import en from "@/i18n/en.json";
@@ -31,7 +32,7 @@ export default async function CategoriesPage() {
                 key={c.slug}
                 href={`/categories/${c.slug}`}
                 ariaLabel={c.name}
-                className="group rounded border border-magenta/40 focus:border-magenta hover:border-magenta bg-surface/50 overflow-hidden flex flex-col shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-colors transition-all"
+                className="group rounded border border-magenta/40 focus:border-magenta hover:border-magenta bg-surface overflow-hidden flex flex-col shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-colors transition-all"
               >
                 <div className="relative w-full aspect-video overflow-hidden">
                   <CategoryImage
@@ -43,7 +44,7 @@ export default async function CategoriesPage() {
                 <div className="p-5 flex flex-col flex-grow">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-sm md:text-2xl font-semibold group-hover:text-magenta transition-colors">{c.name}</h3>
-                    <span className="text-xs text-text-gray group-hover:text-magenta whitespace-nowrap">{c.count} {t["page.articles"]}</span>
+                    <span className="text-xs text-text-gray group-hover:text-magenta whitespace-nowrap"><Icon icon="tabler:bookmarks" className="h-4.5 w-4.5 inline-block"/> {c.count} {t["page.articles"]}</span>
                   </div>
                   {c.description ? (
                     <p className="text-sm md:text-lg text-text-gray group-hover:text-white line-clamp-2">{c.description}</p>

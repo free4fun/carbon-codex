@@ -12,6 +12,7 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@iconify/react": "^6.0.2",
     "@types/jsdom": "^27.0.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^17.2.3",

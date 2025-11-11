@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #09090b;
+  --background: #010101;
   /* Surface uses magenta at 10% opacity over transparent */
   --surface-magenta: rgba(var(--magenta-rgb), 0.1);
+  --surface: #060606;
   --cyan: #00F5FF;
   --cyan-rgb: 0, 245, 255;
   --magenta: #FF00E5;

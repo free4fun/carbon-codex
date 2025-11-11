@@ -4,8 +4,8 @@ import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
 import { Markdown } from "@/src/lib/markdown";
 import SilentLink from "@/app/components/SilentLink";
-import TagList from "@/app/components/TagList";
 import { Clock } from "lucide-react";
+import { Icon } from '@iconify/react';
 
 type Props = { params: Promise<{ slug: string }> };
 type Locale = "en" | "es";
@@ -61,7 +61,7 @@ export default async function BlogDetail({ params }: Props) {
                   <img
                     src={data.author.avatarUrl || "/authors/generic.webp"}
                     alt={data.author.name}
-                    className="w-13 h-13 rounded-full object-cover border border-magenta/40 border-"
+                    className="w-13 h-13 rounded-full object-cover"
                   />
                 </span>
                 <span className="text-lg">{data.author.name}</span>
@@ -111,7 +111,7 @@ export default async function BlogDetail({ params }: Props) {
             {/* Read minutes */}
             {data.post.readMinutes ? (
               <span className="flex items-center gap-1 text-sm text-white whitespace-nowrap ml-4">
-                <Clock className="w-4 h-4" />
+          <Icon icon="mdi:clock-outline" className="w-4 h-4" />
                 {data.post.readMinutes} min
               </span>
             ) : null}
