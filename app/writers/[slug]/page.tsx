@@ -1,89 +1,113 @@
 
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { getAuthorWithTranslation, getPostsByAuthorWithTags } from "@/src/lib/blog";
+import Pagination from "@/app/components/Pagination";
 import AuthorImage from "@/app/components/AuthorImage";
 import AuthorPostCard from "@/app/components/AuthorPostCard";
 import SilentLink from "@/app/components/SilentLink";
 
-export default async function AuthorPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function AuthorPage({ params, searchParams }: { params: any; searchParams: any }) {
   const headersList = await headers();
-  const locale = (headersList.get("x-locale") as string) || "en";
-  const { slug } = await params;
+  const cookieStore = await cookies();
+  const locale = (headersList.get("x-locale") as string) || (cookieStore.get("NEXT_LOCALE")?.value as string) || "en";
+  // Resolve params/searchParams if promises
+  const p: any = params && typeof params.then === "function" ? await params : params;
+  const resolvedParams = p || {};
+  const rawSlug = resolvedParams?.slug;
+  const slug = typeof rawSlug === "string" ? decodeURIComponent(rawSlug).trim() : "";
+
+  const sp: any = searchParams && typeof searchParams.then === "function" ? await searchParams : searchParams;
+  const resolvedSearchParams = sp || {};
+  const page = parseInt(resolvedSearchParams?.page || "1", 10);
+  const PAGE_SIZE = 6;
+  if (!slug) {
+    return <div className="mx-auto max-w-3xl px-4 py-12">Author not found</div>;
+  }
   const author = await getAuthorWithTranslation(slug, locale);
   if (!author) {
     return <div className="mx-auto max-w-3xl px-4 py-12">Author not found</div>;
   }
   const items = await getPostsByAuthorWithTags(author.id, locale);
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const pagedItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   return (
     <main className="flex flex-col">
       <div className="max-w-7xl mx-auto">             
         <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">{author.name}</h2>
-        <div className="flex flex-row items-start gap-8 w-full py-4">
+        <div className="flex flex-row items-center gap-8 w-full py-4">
             <AuthorImage src={author.avatarUrl} alt={author.name} className="w-1/3" />
-          <div className="flex flex-col justify-center flex-1">
+          <div className="flex flex-col justify-center flex-1 h-full">
             {author.bio ? (
-              <p className="text-text-gray mb-3 leading-relaxed max-w-2xl">{author.bio}</p>
+              <p className="mb-9 leading-relaxed max-w-2xl">{author.bio}</p>
             ) : null}
             <div className="flex flex-wrap gap-4 mt-2">
               {author.websiteUrl && (
                 <SilentLink
-                  href={author.websiteUrl.startsWith('http') ? author.websiteUrl : `https://${author.websiteUrl}`}
+                  href={author.websiteUrl}
                   ariaLabel="Website"
-                  className="underline text-blue-600 hover:text-blue-800"
+                  className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
+                  target="_blank"
                 >Website</SilentLink>
               )}
               {author.linkedinUrl && (
                 <SilentLink
-                  href={author.linkedinUrl.startsWith('http') ? author.linkedinUrl : `https://${author.linkedinUrl}`}
+                  href={author.linkedinUrl}
                   ariaLabel="LinkedIn"
-                  className="underline text-blue-600 hover:text-blue-800"
+                  className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
+                  target="_blank"
                 >LinkedIn</SilentLink>
               )}
               {author.githubUrl && (
                 <SilentLink
-                  href={author.githubUrl.startsWith('http') ? author.githubUrl : `https://${author.githubUrl}`}
+                  href={author.githubUrl}
                   ariaLabel="GitHub"
-                  className="underline text-blue-600 hover:text-blue-800"
+                  className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
+                  target="_blank"
                 >GitHub</SilentLink>
               )}
               {author.xUrl && (
                 <SilentLink
-                  href={author.xUrl.startsWith('http') ? author.xUrl : `https://${author.xUrl}`}
+                  href={author.xUrl}
                   ariaLabel="X"
-                  className="underline text-blue-600 hover:text-blue-800"
-                >X</SilentLink>
+                  className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
+                  target="_blank"
+                >Twitter</SilentLink>
               )}
             </div>
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-white">Posts by {author.name}</h2>
+        <h2 className="text-2xl font-bold text-white pt-13">Posts by {author.name}</h2>
         {items.length === 0 ? (
           <p className="text-text-gray">No posts yet.</p>
         ) : (
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            
-            {items.map((p) => (
-              <AuthorPostCard
-                key={p.slug + p.locale}
-                post={{
-                  slug: p.slug,
-                  title: p.title,
-                  description: p.description ?? null,
-                  locale: p.locale,
-                  coverUrl: p.coverUrl,
-                  readMinutes: p.readMinutes ? Number(p.readMinutes) : null,
-                  author: { slug: author.slug, name: author.name, avatarUrl: author.avatarUrl },
-                  category: { slug: null, name: null, imageUrl: null },
-                  publishedAt: p.publishedAt,
-                  tags: p.tags,
-                }}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {pagedItems.map((p) => (
+                <AuthorPostCard
+                  key={p.slug + p.locale}
+                  post={{
+                    slug: p.slug,
+                    title: p.title,
+                    description: p.description ?? null,
+                    locale: p.locale,
+                    coverUrl: p.coverUrl,
+                    readMinutes: p.readMinutes ? Number(p.readMinutes) : null,
+                    author: { slug: author.slug, name: author.name, avatarUrl: author.avatarUrl },
+                    category: p.category,
+                    publishedAt: p.publishedAt,
+                    tags: p.tags,
+                  }}
+                />
+              ))}
+            </div>
+            {/* Pagination */}
+            <Pagination
+              slug={author.slug}
+              currentPage={page}
+              totalPages={totalPages}
+              locale={locale}
+            />
+          </>
         )}
       </div>
     </main>

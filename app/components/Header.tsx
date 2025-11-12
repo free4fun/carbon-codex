@@ -124,25 +124,11 @@ export default function Header() {
   return (
     <header className="w-full bg-transparent">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <SilentLink href="/" ariaLabel={t.siteName} className="group flex items-center gap-3 transition-opacity hover:opacity-90">
+        <SilentLink href="/" ariaLabel={t.siteName} className="group flex items-center gap-3">
           <span className="relative inline-block h-8 w-8">
             <Image src="/carboncodex.svg" alt={t.siteName} fill className="object-contain" />
-            <span
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-cyan"
-              style={{
-                WebkitMaskImage: 'url(/carboncodex.svg)',
-                maskImage: 'url(/carboncodex.svg)',
-                WebkitMaskSize: 'contain',
-                maskSize: 'contain',
-                WebkitMaskRepeat: 'no-repeat',
-                maskRepeat: 'no-repeat',
-                WebkitMaskPosition: 'center',
-                maskPosition: 'center',
-              }}
-              aria-hidden="true"
-            />
           </span>
-          <span className="font-semibold text-lg text-magenta group-hover:text-cyan transition-colors">
+          <span className="font-semibold text-lg">
             {t.siteName}
           </span>
         </SilentLink>

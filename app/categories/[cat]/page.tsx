@@ -43,15 +43,18 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const category = await getCategoryWithTranslation(slug, locale);
   const t = locale === "es" ? es : en;
-  const items = await getPostsByCategoryWithTags({ slug, locale, offset, limit: POSTS_PER_PAGE });
-  const totalPages = Math.ceil(items.length / POSTS_PER_PAGE);
+  const { items, total } = await getPostsByCategoryWithTags({ slug, locale, offset, limit: POSTS_PER_PAGE });
+  // Calcular el total de páginas usando el total real
+  const totalCount = typeof total === 'string' ? parseInt(total, 10) : Number(total);
+  const totalPages = Math.max(1, Math.ceil(totalCount / POSTS_PER_PAGE));
   const derivedCategory = !category && items[0]
     ? {
         id: 0,
         slug,
         name: items[0].category?.name ?? slug,
-  description: items[0].description ?? null,
+        description: items[0].description ?? null,
         imageUrl: items[0].category?.imageUrl ?? null,
+        count: total,
       }
     : null;
 
@@ -74,7 +77,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         )}
         
     
-       {items.length === 0 ? (
+  {items.length === 0 ? (
          <p className="text-sm md:text-lg lg:text-xl text-text-gray leading-relaxed mb-6 md:mb-8">No posts yet.</p>
        ) : (
          <>
@@ -108,7 +111,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
            />
          </>
        )}
-    </div>
+      </div>
     </main>
   );
 }

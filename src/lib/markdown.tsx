@@ -32,16 +32,16 @@ export function Markdown({ children, className }: Props) {
               <span className="link-effect-from-magenta inline-block align-baseline">
                 <a
                   {...props}
-                  className="underline underline-offset-2 hover:no-underline inline-block align-baseline"
+                  className="underline underline-offset-2 hover:no-underline inline-block "
                   target={isExternal ? "_blank" : undefined}
                   rel={isExternal ? "noopener noreferrer" : undefined}
                   style={{ color: 'inherit' }}
                 >
                   {props.children}
                   {isExternal ? (
-                    <Icon icon="mdi:open-in-new" className="inline-block w-3.5 h-3.5 ml-0.5 align-baseline" style={{ color: 'inherit' }} />
+                    <Icon icon="tabler:external-link" className="inline-block w-5 h-5 ml-1 align-baseline" style={{ color: 'inherit' }} />
                   ) : (
-                    <Icon icon="mdi:arrow-left-box" className="inline-block w-3.5 h-3.5 ml-0.5 align-baseline" style={{ color: 'inherit' }} />
+                    <Icon icon="tabler:layers-linked" className="inline-block w-5 h-5 ml-0.5 align-baseline" style={{ color: 'inherit' }} />
                   )}
                 </a>
               </span>

@@ -392,7 +392,7 @@ export async function searchPosts(locale: string, q: string, limit = 20) {
 
 export async function getPostsByAuthorWithTags(authorId: number, locale: string) {
   const { db } = await import("@/src/db/client");
-  const { postGroups, posts, authors, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
+  const { postGroups, posts, authors, categories, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
   const items = await db
     .select({
       groupId: postGroups.id,
@@ -406,13 +406,14 @@ export async function getPostsByAuthorWithTags(authorId: number, locale: string)
       authorSlug: authors.slug,
       authorName: authors.name,
       authorAvatarUrl: authors.avatarUrl,
-      catSlug: sql<string>`NULL`,
-      catName: sql<string>`NULL`,
-      catImageUrl: sql<string>`NULL`,
+      catSlug: categories.slug,
+      catName: categories.name,
+      catImageUrl: categories.imageUrl,
     })
     .from(posts)
     .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
     .innerJoin(authors, eq(postGroups.authorId, authors.id))
+    .leftJoin(categories, eq(postGroups.categoryId, categories.id))
     .where(and(eq(postGroups.authorId, authorId), eq(posts.locale, locale), eq(posts.draft, false), sql`posts.published_at IS NOT NULL`))
     .orderBy(desc(posts.publishedAt));
   const groupIds = items.map((p) => p.groupId);
@@ -423,6 +424,24 @@ export async function getPostsByAuthorWithTags(authorId: number, locale: string)
 export async function getPostsByCategoryWithTags({ slug, locale, offset, limit }: { slug: string, locale: string, offset: number, limit: number }) {
   const { db } = await import("@/src/db/client");
   const { authors, categories, postGroups, posts, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
+
+  // Obtener el total de posts en la categoría y el idioma actual
+  const totalRows = await db
+    .select({ count: sql`COUNT(DISTINCT post_groups.id)` })
+    .from(posts)
+    .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
+    .innerJoin(categories, eq(postGroups.categoryId, categories.id))
+    .where(
+      and(
+        eq(categories.slug, slug),
+        eq(posts.locale, locale),
+        eq(posts.draft, false),
+        sql`posts.published_at IS NOT NULL`
+      )
+    );
+  const total = totalRows[0]?.count ?? 0;
+
+  // Obtener los posts paginados
   const items = await db
     .selectDistinctOn([postGroups.id], {
       groupId: postGroups.id,
@@ -443,8 +462,8 @@ export async function getPostsByCategoryWithTags({ slug, locale, offset, limit }
     })
     .from(posts)
     .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
-  .innerJoin(categories, eq(postGroups.categoryId, categories.id))
-  .innerJoin(authors, eq(postGroups.authorId, authors.id))
+    .innerJoin(categories, eq(postGroups.categoryId, categories.id))
+    .innerJoin(authors, eq(postGroups.authorId, authors.id))
     .where(
       and(
         eq(categories.slug, slug),
@@ -458,5 +477,8 @@ export async function getPostsByCategoryWithTags({ slug, locale, offset, limit }
     .offset(offset);
   const groupIds = items.map((p: any) => p.groupId).filter((id: number) => id);
   const tagMap = await fetchTagsForGroups(groupIds);
-  return mapPostRows(items, tagMap);
+  return {
+    items: mapPostRows(items, tagMap),
+    total,
+  };
 }

@@ -1,10 +1,10 @@
 import { getPostBySlug, getRelatedByTag } from "@/src/lib/blog";
+import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
 import { Markdown } from "@/src/lib/markdown";
 import SilentLink from "@/app/components/SilentLink";
-import { Clock } from "lucide-react";
 import { Icon } from '@iconify/react';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -26,95 +26,97 @@ function formatDate(date: Date, locale: string): string {
 }
 
 export default async function BlogDetail({ params }: Props) {
- const headersList = await headers();
+  const headersList = await headers();
   const locale = (headersList.get('x-locale') as Locale) || 'en';
   const t = locale === "en" ? en : es;
   const { slug } = await params;
-  
-  
   const data = await getPostBySlug(slug, locale);
   if (!data) {
-    return <div className="mx-auto max-w-3xl px-4 py-12">Not found</div>;
+    redirect("/categories");
   }
-
   const related =
     data.tags?.[0]?.slug
-        ? await getRelatedByTag(slug, locale, data.tags[0].slug)
+      ? await getRelatedByTag(slug, locale, data.tags[0].slug)
       : [];
 
   return (
     <main className="flex flex-col">
-      <section className="w-full flex items-center mt-6 px-6">
-        <div className="max-w-7xl mx-auto ">
-          <div className="flex items-center justify-between mb-2">
-            {/* Title */}
-            <h1 className="text-3xl text-white md:text-4xl font-bold leading-tight flex-1">{data.post.title}</h1>
-            {/* Author info */}
-            {data.author?.name && (
-              <SilentLink
-                href={`/authors/${data.author.slug}`}
-                ariaLabel={data.author.name}
-                stopPropagation
-                className="flex items-center gap-2 link-effect-from-text"
-              >
-                <span className="inline-block">
-                  <img
-                    src={data.author.avatarUrl || "/authors/generic.webp"}
-                    alt={data.author.name}
-                    className="w-13 h-13 rounded-full object-cover"
-                  />
-                </span>
-                <span className="text-lg">{data.author.name}</span>
-              </SilentLink>
-            )}
-          </div>
-          {/* Tags */}
-          {data.tags?.length ? (
-            <div className="mb-2">
-              <div className="flex flex-wrap gap-2">
-                {data.tags.map((tag) => (
+      <section className="w-full mb-6 px-6">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+            <div className="w-full md:col-span-2">
+              <h2 className="text-2xl md:text-4xl font-bold mb-3">{data.post.title}</h2>
+              {/* Tags */}
+              {data.tags?.length ? (
+                <div className="mb-2">
+                  <div className="flex flex-wrap gap-2">
+                    {data.tags.map((tag) => (
+                      <SilentLink
+                        key={tag.slug}
+                        href={`/tags/${tag.slug}`}
+                        ariaLabel={tag.name}
+                        stopPropagation
+                        className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
+                      >
+                        <Icon icon="tabler:tags" className="w-4.5 h-4.5" />
+                        {tag.name}
+                      </SilentLink>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {/* Description */}
+              {data.post.description && (
+                <p className="text-text-gray md:text-md mb-3 w-full leading-relaxed">{data.post.description}</p>
+              )}
+              <div className="flex flex-col gap-2 mb-6">
+                {/* Category */}
+                {data.category?.name && (
                   <SilentLink
-                    key={tag.slug}
-                    href={`/tags/${tag.slug}`}
-                    ariaLabel={tag.name}
+                    href={`/categories/${data.category.slug}`}
+                    ariaLabel={data.category.name}
                     stopPropagation
-                    className="text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
+                    className="flex items-center gap-1 text-text-gray hover:text-magenta uppercase tracking-wide font-semibold text-sm"
                   >
-                    {tag.name}
+                    <Icon icon="tabler:bookmarks" className="w-4.5 h-4.5" />
+                    {data.category.name}
                   </SilentLink>
-                ))}
+                )}
               </div>
             </div>
-          ) : null}
-          {/* Description */}
-          {data.post.description && (
-            <p className="text-sm mb-3 md:text-lg">{data.post.description}</p>
-          )}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex flex-col gap-1">
-              {/* Category */}
-              {data.category?.name && (
+            <div className="flex flex-col items-end mt-8 md:mr-20">
+              {data.author?.name && (
                 <SilentLink
-                  href={`/categories/${data.category.slug}`}
-                  ariaLabel={data.category.name}
+                  href={`/authors/${data.author.slug}`}
+                  ariaLabel={data.author.name}
                   stopPropagation
-                  className="link-effect-from-magenta uppercase tracking-wide font-semibold"
+                  className="flex flex-col items-center link-effect-from-text"
                 >
-                  {data.category.name}
+                  <span className="inline-block">
+                    <img
+                      src={data.author.avatarUrl || "/authors/generic.webp"}
+                      alt={data.author.name}
+                      className="w-14 h-14 rounded-full object-cover"
+                    />
+                  </span>
+                  <span className="text-text-gray hover:text-magenta text-sm font-semibold">{data.author.name}</span>
                 </SilentLink>
               )}
-              {/* Date */ }
-              {data.post.publishedAt ? (
-                <span className="text-sm text-white">{formatDate(new Date(data.post.publishedAt), data.post.locale)}</span>
-              ) : null}
+              <div className="flex flex-row items-center gap-4 mt-2">
+                {data.post.publishedAt && (
+                  <span className="flex items-end gap-1 text-sm text-text-gray">
+                    <Icon icon="tabler:calendar-week" className="w-4.5 h-4.5" />
+                    {formatDate(new Date(data.post.publishedAt), data.post.locale)}
+                  </span>
+                )}
+                {data.post.readMinutes && (
+                  <span className="flex items-end gap-1 text-sm text-text-gray">
+                    <Icon icon="tabler:clock" className="w-4.5 h-4.5" />
+                    {data.post.readMinutes} min
+                  </span>
+                )}
+              </div>
             </div>
-            {/* Read minutes */}
-            {data.post.readMinutes ? (
-              <span className="flex items-center gap-1 text-sm text-white whitespace-nowrap ml-4">
-          <Icon icon="mdi:clock-outline" className="w-4 h-4" />
-                {data.post.readMinutes} min
-              </span>
-            ) : null}
           </div>
         </div>
       </section>

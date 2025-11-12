@@ -106,10 +106,14 @@ export default async function Home() {
                 </div>
                 <div className="p-3 flex flex-col gap-1.5">
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm md:text-xl font-semibold group-hover:text-magenta transition-colors leading-tight">
+                    <div className="flex items-center gap-1 group-hover:text-magenta transition-colors">
+                    <Icon icon="tabler:bookmarks" className="w-4.5 h-4.5" />
+                    <span className="text-sm md:text-xl font-semibold leading-tight">
                       {category.name}
-                    </h3>
-                    <span className="text-xs group-hover:text-magenta whitespace-nowrap">
+                    </span>
+                    </div>
+                    <span className="flex items-center gap-1 text-sm group-hover:text-magenta whitespace-nowrap">
+                      <Icon icon="tabler:notes" className="h-4.5 w-4.5"/>
                       {category.count} {t["page.articles"]}
                     </span>
                   </div>

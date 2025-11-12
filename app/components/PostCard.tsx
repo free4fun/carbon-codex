@@ -80,10 +80,11 @@ export default function PostCard({ post }: Props) {
           {post.category?.name && (
             <SilentLink
               href={`/categories/${post.category.slug}`}
-              className="link-effect-from-magenta link-effect uppercase tracking-wide font-semibold text-lg"
+              className="flex items-center gap-1 link-effect-from-text link-effect uppercase tracking-wide font-semibold text-md"
               ariaLabel={post.category.name || undefined}
               stopPropagation
             >
+              <Icon icon="tabler:bookmarks" className="w-4.5 h-4.5" />
               {post.category.name}
             </SilentLink>
           )}
@@ -129,38 +130,19 @@ export default function PostCard({ post }: Props) {
           </div>
         )}
         <div className="mt-auto flex items-center justify-between gap-3 text-xs pt-1">
-          {/* Mobile Only */}
-          <div className="md:hidden flex flex-col gap-1 min-w-0">
-            {/* Category */ }
-            {post.category?.name && (
-              <SilentLink
-                href={`/categories/${post.category.slug}`}
-                className="hover:!text-magenta transition-colors truncate uppercase tracking-wide font-semibold text-sm"
-                ariaLabel={post.category.name || undefined}
+          <div className="flex w-full justify-end">
+            {post.author?.name && (
+              <SilentLink 
+                href={`/authors/${post.author.slug}`} 
+                className="flex items-center gap-1.5 link-effect-from-text text-lg"
+                ariaLabel={post.author.name || undefined}
                 stopPropagation
               >
-                {post.category.name}
+                <Icon icon="tabler:user" className="w-4.5 h-4.5" />
+                {post.author.name}
               </SilentLink>
             )}
-            <div className="text-text-gray truncate">
-              {/* Date */ }
-              {post.publishedAt
-                ? formatDate(new Date(post.publishedAt), post.locale)
-                : "Draft"}
-            </div>
           </div>
-          {/* Author */}
-          {post.author?.name && (
-            <SilentLink 
-              href={`/authors/${post.author.slug}`} 
-              className="flex items-center gap-1.5 link-effect-from-text text-lg md:ml-auto"
-              ariaLabel={post.author.name || undefined}
-              stopPropagation
-            >
-              <Icon icon="tabler:user" className="w-4.5 h-4.5" />
-              <span>{post.author.name}</span>
-            </SilentLink>
-          )}
         </div>
       </div>
     </article>

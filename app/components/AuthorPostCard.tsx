@@ -5,7 +5,7 @@ import PostImage from "./PostImage";
 import { useRouter } from "next/navigation";
 import en from "@/i18n/en.json";
 import es from "@/i18n/es.json";
-import { Clock, User } from "lucide-react";
+import { Icon } from '@iconify/react';
 
 type Props = {
   post: {
@@ -65,7 +65,7 @@ export default function AuthorPostCard({ post }: Props) {
         {/* Read time badge */}
         {post.readMinutes ? (
           <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-sm px-1.5 py-0.5 rounded flex items-center gap-1">
-            <Clock size={14} />
+            <Icon icon="mdi:clock-outline" className="w-4.5 h-4.5" />
             {post.readMinutes} {t["page.minRead"]}
           </div>
         ) : null}
@@ -77,7 +77,6 @@ export default function AuthorPostCard({ post }: Props) {
         <h3 className="text-sm md:text-xl font-semibold group-hover:text-magenta transition-colors line-clamp-1">
           {post.title}
         </h3>
-
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
@@ -87,8 +86,8 @@ export default function AuthorPostCard({ post }: Props) {
                 href={`/tags/${t.slug}`}
                 ariaLabel={t.name}
                 stopPropagation
-                className="text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
-              >
+                className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded hover:bg-surface-magenta border border-magenta/30 hover:border-magenta hover:text-magenta transition-colors"
+              ><Icon icon="tabler:tags" className="w-4.5 h-4.5" />
                 {t.name}
               </SilentLink>
             ))}
@@ -100,11 +99,29 @@ export default function AuthorPostCard({ post }: Props) {
           <p className="text-sm md:text-lg text-text-gray line-clamp-2 group-hover:text-white">{post.description}</p>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-3 text-xs">
-          <div className="text-sm text-text-gray group-hover:text-white flex-shrink-0">
-            {post.publishedAt ? formatDate(new Date(post.publishedAt), post.locale) : "Draft"}
+        <div className="mt-auto flex flex-row items-end justify-between gap-3 text-xs">
+          <div className="flex flex-col items-start gap-1 text-sm text-text-gray group-hover:text-white flex-grow">
+            {/* Category */}
+            {post.category && post.category.slug && post.category.name ? (
+              <SilentLink 
+                href={`/categories/${post.category.slug}`} 
+                className="flex items-center gap-1 link-effect-from-magenta uppercase tracking-wide font-semibold text-md"
+                ariaLabel={post.category.name}
+                stopPropagation
+              >
+                <Icon icon="tabler:bookmarks" className="w-4.5 h-4.5" />
+                {post.category.name}
+              </SilentLink>
+            ) : (
+              <span className="uppercase tracking-wide font-semibold text-lg text-text-gray/60">No category</span>
+            )}
+            {/* Date below category */}
+            <div className="flex items-center gap-1 mt-0.5">
+              <Icon icon="tabler:calendar-week" className="w-4.5 h-4.5" />
+              {post.publishedAt ? formatDate(new Date(post.publishedAt), post.locale) : "Draft"}
+            </div>
           </div>
-          <div className="text-text-gray group-hover:text-white hover:!text-magenta flex-shrink-0">
+          <div className="text-text-gray group-hover:text-white hover:!text-magenta flex-shrink-0 self-end">
            {/* Author */}
            {post.author?.name ? (
             <SilentLink
@@ -113,7 +130,7 @@ export default function AuthorPostCard({ post }: Props) {
               stopPropagation
               className="text-sm link-effect-from-text flex items-center gap-2"
             >
-              <User className="w-5 h-5" />
+              <Icon icon="tabler:user" className="w-4.5 h-4.5" />
               <span>{post.author.name}</span>
             </SilentLink>
           ) : <span/>}

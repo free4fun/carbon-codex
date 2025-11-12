@@ -44,7 +44,9 @@ export default async function CategoriesPage() {
                 <div className="p-5 flex flex-col flex-grow">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-sm md:text-2xl font-semibold group-hover:text-magenta transition-colors">{c.name}</h3>
-                    <span className="text-xs text-text-gray group-hover:text-magenta whitespace-nowrap"><Icon icon="tabler:bookmarks" className="h-4.5 w-4.5 inline-block"/> {c.count} {t["page.articles"]}</span>
+                    <span className="flex items-center gap-1 text-sm text-text-gray group-hover:text-magenta whitespace-nowrap">
+                      <Icon icon="tabler:notes" className="h-4.5 w-4.5"/> {c.count} {t["page.articles"]}
+                    </span>
                   </div>
                   {c.description ? (
                     <p className="text-sm md:text-lg text-text-gray group-hover:text-white line-clamp-2">{c.description}</p>

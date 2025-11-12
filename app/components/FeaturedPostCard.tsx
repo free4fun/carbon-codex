@@ -100,41 +100,42 @@ export default function FeaturedPostCard({ post }: Props) {
         </div>
 
         {/* Bottom row: category/date on left, author on right */}
-        <div className="flex items-center justify-between gap-3 text-sm mt-auto">
-          {/* Left: Category and Date */}
-          <div className="flex flex-col gap-1 min-w-0">
-            {post.category?.name && (
-              <SilentLink 
-                href={`/categories/${post.category.slug}`} 
-                className="link-effect-from-magenta uppercase tracking-wide font-semibold text-lg"
-                ariaLabel={post.category.name || undefined}
-                stopPropagation
-              >
-                {post.category.name}
-              </SilentLink>
-            )}
+        <div className="flex flex-col gap-1 text-sm mt-auto">
+          {/* Categoría arriba a la izquierda */}
+          {post.category?.name && (
+            <SilentLink 
+              href={`/categories/${post.category.slug}`} 
+              className="flex items-center gap-1 link-effect-from-text uppercase tracking-wide font-semibold text-md"
+              ariaLabel={post.category.name || undefined}
+              stopPropagation
+            >
+              <Icon icon="tabler:bookmarks" className="w-4.5 h-4.5" />
+              {post.category.name}
+            </SilentLink>
+          )}
+          {/* Fila inferior: fecha a la izquierda, autor a la derecha */}
+          <div className="flex items-center justify-between gap-2 w-full">
             <div className="flex items-center gap-1 text-sm group-hover:text-white text-text-gray">
               <Icon icon="tabler:calendar-week" className="w-4.5 h-4.5" />
               {post.publishedAt
                 ? formatDate(new Date(post.publishedAt), post.locale)
                 : "Draft"}
             </div>
-          </div>
-
-          {/* Right: Author with avatar */}
-          {post.author?.name && (
-            <SilentLink 
-              href={`/authors/${post.author.slug}`} 
-              className="flex items-center gap-1.5 text-text-gray link-effect-from-text group-hover:text-white transition-colors "
-              ariaLabel={post.author.name || undefined}
-              stopPropagation
-            >
+            {/* Autor completamente a la derecha */}
+            {post.author?.name && (
+              <SilentLink 
+                href={`/authors/${post.author.slug}`} 
+                className="flex items-center gap-1.5 text-text-gray link-effect-from-text group-hover:text-white transition-colors"
+                ariaLabel={post.author.name || undefined}
+                stopPropagation
+              >
                 <Icon icon="tabler:user" className="w-4.5 h-4.5" />
-              <span className="text-lg">{post.author.name}</span>
-            </SilentLink>
-          )}
+                <span className="text-lg">{post.author.name}</span>
+              </SilentLink>
+            )}
+          </div>
         </div>
       </div>
-    </article>
+   </article>
   );
 }

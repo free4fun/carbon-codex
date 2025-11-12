@@ -10,8 +10,7 @@ interface SilentLinkProps {
   ariaLabel?: string;
   onNavigate?: () => void; // optional callback after navigation
   stopPropagation?: boolean; // if true, stop event bubbling (for nested interactive zones)
-  target?: string;
-  rel?: string;
+  target?: string; // the target to open in (e.g., "_blank")
 }
 
 /**
@@ -23,12 +22,11 @@ interface SilentLinkProps {
 export default function SilentLink({
   href,
   children,
-  className = "",
+  className,
   ariaLabel,
   onNavigate,
   stopPropagation = false,
   target,
-  rel
 }: SilentLinkProps) {
   const router = useRouter();
 
@@ -36,13 +34,22 @@ export default function SilentLink({
 
   const handleActivate = (e: MouseEvent | KeyboardEvent) => {
     if (stopPropagation) e.stopPropagation();
-    if (isExternal && onNavigate) {
-      onNavigate();
-    } else if (isExternal) {
-      // Let <a> handle navigation
-    } else {
-      router.push(href);
+    if (isExternal) {
+      if (onNavigate) onNavigate();
+      if (target === "_blank") {
+        if (e && typeof e.preventDefault === "function") {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        window.open(href, "_blank", "noopener,noreferrer");
+        return;
+      } else {
+        window.location.href = href;
+        return;
+      }
     }
+    if (onNavigate) onNavigate();
+    router.push(href);
   };
 
   const handleKey = (e: KeyboardEvent) => {
@@ -52,20 +59,6 @@ export default function SilentLink({
     }
   };
 
-  if (isExternal) {
-    return (
-      <a
-        href={href}
-        className={"cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-magenta focus-visible:ring-offset-2 " + className}
-        aria-label={ariaLabel}
-        target={target || "_blank"}
-        rel={rel || "noopener noreferrer"}
-        onClick={onNavigate}
-      >
-        {children}
-      </a>
-    );
-  }
   return (
     <span
       role="link"
@@ -73,7 +66,8 @@ export default function SilentLink({
       aria-label={ariaLabel}
       onClick={handleActivate}
       onKeyDown={handleKey}
-      className={"cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-magenta focus-visible:ring-offset-2 " + className}
+      className={"cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-magenta focus-visible:ring-offset-2 " + (className ? ` ${className}` : "")}
+      data-target={target}
     >
       {children}
     </span>
