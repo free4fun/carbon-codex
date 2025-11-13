@@ -1,8 +1,7 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import { db, pool } from "@/src/db/client";
-import { users, categories, authors, postGroups, posts, tags, postGroupTags } from "@/src/db/schema";
-import { eq } from "drizzle-orm";
+import { users } from "@/src/db/schema";
 
 async function main() {
   const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@example.com";
