@@ -14,7 +14,7 @@ type Props = {
   };
 };
 
-export default async function AdminPostsList({ searchParams }: Props) {
+export default async function AdminPostsList({ searchParams = {} }: Props) {
   let params: any = searchParams;
   if (!params) params = {};
   if (typeof params.then === "function") params = await params;

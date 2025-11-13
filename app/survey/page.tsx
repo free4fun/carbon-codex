@@ -4,7 +4,7 @@ import es from "@/i18n/es.json";
 
 type Locale = "en" | "es";
 
-export default async function SurveyPage() {
+export default async function SurveyPage({ searchParams = {} }: { searchParams?: any }) {
   const headersList = await headers();
   const locale = (headersList.get("x-locale") as Locale) || "en";
   const t = locale === "en" ? en : es;

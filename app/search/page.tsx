@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
-export default async function SearchPage({ searchParams }: { searchParams?: { q?: string } | Promise<{ q?: string }> }) {
+export default async function SearchPage({ searchParams = {} }: { searchParams?: { q?: string } | Promise<{ q?: string }> }) {
   const headersList = await headers();
   const locale = (headersList.get('x-locale') as string) || 'en';
   const t = locale === "en" ? en : es;

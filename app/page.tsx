@@ -10,7 +10,7 @@ import { Icon } from '@iconify/react';
 
 type Locale = "en" | "es";
 
-export default async function Home() {
+export default async function Home({ searchParams = {} }: { searchParams?: any }) {
   const headersList = await headers();
   const locale = (headersList.get('x-locale') as Locale) || 'en';
   const t = locale === "en" ? en : es;
