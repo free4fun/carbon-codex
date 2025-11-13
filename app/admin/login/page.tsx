@@ -29,9 +29,20 @@ function LoginForm() {
       setErr(res?.error || "Invalid credentials");
       return;
     }
+    // Forzar reload tras login exitoso
     router.replace(next);
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   }
 
+  // Log para verificar la cookie de sesión
+  if (typeof window !== "undefined") {
+    setTimeout(() => {
+      const cookies = document.cookie;
+      console.log("COOKIES AFTER LOGIN:", cookies);
+    }, 1000);
+  }
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <form onSubmit={onSubmit} className="w-full max-w-sm border rounded p-6 grid gap-4">
