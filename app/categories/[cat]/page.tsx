@@ -18,7 +18,7 @@ export const fetchCache = 'force-no-store';
 
 const POSTS_PER_PAGE = 6;
 
-export default async function CategoryPage({ params, searchParams = Promise.resolve({}) }: Props) {
+export default async function CategoryPage({ params, searchParams = {} }: Props) {
   const headersList = await headers();
   const cookieStore = await cookies();
   const locale = (headersList.get("x-locale") as string) || (cookieStore.get("NEXT_LOCALE")?.value as string) || "en";

@@ -16,7 +16,7 @@ type Props = {
   searchParams?: { page?: string } | Promise<{ page?: string }>;
 };
 
-export default async function TagsPage({ searchParams }: Props) {
+export default async function TagsPage({ searchParams = {} }: Props) {
   const headersList = await headers();
   const locale = (headersList.get("x-locale") as Locale) || "en";
   const t = locale === "en" ? en : es;

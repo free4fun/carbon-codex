@@ -8,7 +8,7 @@ import AuthorImage from "@/app/components/AuthorImage";
 import AuthorPostCard from "@/app/components/AuthorPostCard";
 import SilentLink from "@/app/components/SilentLink";
 
-export default async function AuthorPage({ params, searchParams = Promise.resolve({}) }: { params: any; searchParams?: any }) {
+export default async function AuthorPage({ params, searchParams = {} }: { params: any; searchParams?: any }) {
   const headersList = await headers();
   const cookieStore = await cookies();
   const locale = (headersList.get("x-locale") as string) || (cookieStore.get("NEXT_LOCALE")?.value as string) || "en";
