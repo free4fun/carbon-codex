@@ -141,9 +141,9 @@ export type PostSummary = {
 };
 
 export async function getLatestPosts(locale: string, limit = 10, cursor?: string) {
-  locale = sanitizeLocale(locale);
-  limit = sanitizeLimit(limit, 10, 50);
-  const after = cursor ? new Date(cursor) : undefined;
+  locale = sanitizeLocale(locale) || "en";
+  limit = sanitizeLimit(limit, 10, 50) || 10;
+  const after = cursor ? new Date(cursor) : null;
 
   const rows = await db
     .select({
@@ -187,8 +187,8 @@ export async function getLatestPosts(locale: string, limit = 10, cursor?: string
 }
 
 export async function getPostBySlug(slug: string, locale: string) {
-  slug = sanitizeSlug(slug);
-  locale = sanitizeLocale(locale);
+  slug = sanitizeSlug(slug) || "";
+  locale = sanitizeLocale(locale) || "en";
   const rows = await db
     .select({
       groupId: postGroups.id,
@@ -264,10 +264,10 @@ export async function getRelatedByTag(
   tag: string,
   limit = 6
 ) {
-  slug = sanitizeSlug(slug);
-  locale = sanitizeLocale(locale);
-  tag = sanitizeSlug(tag);
-  limit = sanitizeLimit(limit, 6, 20);
+  slug = sanitizeSlug(slug) || "";
+  locale = sanitizeLocale(locale) || "en";
+  tag = sanitizeSlug(tag) || "";
+  limit = sanitizeLimit(limit, 6, 20) || 6;
   const [grp] = await db
     .select({ id: postGroups.id })
     .from(postGroups)
@@ -308,7 +308,7 @@ export async function getRelatedByTag(
 }
 
 export async function getCategories(locale: string) {
-  locale = sanitizeLocale(locale);
+  locale = sanitizeLocale(locale) || "en";
   const rows = await db.execute<{
     slug: string;
     name: string;
@@ -343,9 +343,9 @@ export async function getCategories(locale: string) {
 }
 
 export async function getTags(locale: string, limit?: number, offset?: number) {
-  locale = sanitizeLocale(locale);
-  limit = sanitizeLimit(limit, 20, 100);
-  offset = sanitizeLimit(offset, 0, 1000);
+  locale = sanitizeLocale(locale) || "en";
+  limit = sanitizeLimit(limit, 20, 100) || 20;
+  offset = sanitizeLimit(offset, 0, 1000) || 0;
   const rows = await db.execute<{
     slug: string;
     name: string;
@@ -377,7 +377,7 @@ export async function getTags(locale: string, limit?: number, offset?: number) {
 }
 
 export async function getTagsCount(locale: string) {
-  locale = sanitizeLocale(locale);
+  locale = sanitizeLocale(locale) || "en";
   const rows = await db.execute<{
     count: number;
   }>(sql`
@@ -395,10 +395,10 @@ export async function getTagsCount(locale: string) {
 }
 
 export async function getPostsByTagWithTags({ slug, locale, offset, limit }: { slug: string, locale: string, offset: number, limit: number }) {
-  slug = sanitizeSlug(slug);
-  locale = sanitizeLocale(locale);
-  offset = sanitizeLimit(offset, 0, 1000);
-  limit = sanitizeLimit(limit, 10, 100);
+  slug = sanitizeSlug(slug) || "";
+  locale = sanitizeLocale(locale) || "en";
+  offset = sanitizeLimit(offset, 0, 1000) || 0;
+  limit = sanitizeLimit(limit, 10, 100) || 10;
   const { db } = await import("@/src/db/client");
   const { authors, postGroups, posts, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
 
@@ -471,7 +471,7 @@ export async function getPostsByTagWithTags({ slug, locale, offset, limit }: { s
 }
 
 export async function getAuthorsWithCounts(locale: string) {
-  locale = sanitizeLocale(locale);
+  locale = sanitizeLocale(locale) || "en";
   const rows = await db.execute<{
     slug: string;
     name: string;
@@ -511,9 +511,9 @@ export async function getAuthorsWithCounts(locale: string) {
 }
 
 export async function searchPosts(locale: string, q: string, limit = 20, offset: number = 0) {
-  locale = sanitizeLocale(locale);
-  limit = sanitizeLimit(limit, 20, 100);
-  offset = sanitizeLimit(offset, 0, 1000);
+  locale = sanitizeLocale(locale) || "en";
+  limit = sanitizeLimit(limit, 20, 100) || 20;
+  offset = sanitizeLimit(offset, 0, 1000) || 0;
   const like = `%${q}%`;
   // Obtener el total de resultados
   const totalRows = await db
@@ -601,7 +601,7 @@ export async function searchPosts(locale: string, q: string, limit = 20, offset:
 }
 
 export async function getPostsByAuthorWithTags(authorId: number, locale: string) {
-  locale = sanitizeLocale(locale);
+  locale = sanitizeLocale(locale) || "en";
   const { db } = await import("@/src/db/client");
   const { postGroups, posts, authors, categories, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
   const items = await db
@@ -633,10 +633,10 @@ export async function getPostsByAuthorWithTags(authorId: number, locale: string)
 }
 
 export async function getPostsByCategoryWithTags({ slug, locale, offset, limit }: { slug: string, locale: string, offset: number, limit: number }) {
-  slug = sanitizeSlug(slug);
-  locale = sanitizeLocale(locale);
-  offset = sanitizeLimit(offset, 0, 1000);
-  limit = sanitizeLimit(limit, 10, 100);
+  slug = sanitizeSlug(slug) || "";
+  locale = sanitizeLocale(locale) || "en";
+  offset = sanitizeLimit(offset, 0, 1000) || 0;
+  limit = sanitizeLimit(limit, 10, 100) || 10;
   const { db } = await import("@/src/db/client");
   const { authors, categories, postGroups, posts, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
 
