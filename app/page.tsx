@@ -13,7 +13,6 @@ type Locale = "en" | "es";
 export default async function Home() {
   const headersList = await headers();
   const locale = (headersList.get('x-locale') as Locale) || 'en';
-  
   const t = locale === "en" ? en : es;
   const { items: latest } = await getLatestPosts(locale, 6);
   const cats = await getCategories(locale);
@@ -27,7 +26,7 @@ export default async function Home() {
           <p className="text-base md:text-lg lg:text-xl text-text-gray leading-relaxed mb-6 md:mb-8">{t["home.recentPostsSubtitle"]}</p>
           
           {latest.length === 0 ? (
-            <p className="text-text-gray">No posts yet.</p>
+            <p className="text-text-gray">{t["home.noPosts"]}</p>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-4 mb-6 md:mb-8 lg:items-stretch">
               {/* Featured post - left side (4/7 width) */}
@@ -46,7 +45,7 @@ export default async function Home() {
           )}
           
           {/* View all posts button */}
-          <div className="text-center py-6">
+          <div className="py-6 flex text-center justify-center">
             <SilentLink
               href="/categories"
               ariaLabel={t["home.viewAllPosts"]}
@@ -67,16 +66,20 @@ export default async function Home() {
           <p className="text-base md:text-lg lg:text-xl text-text-gray mb-12 md:mb-20 leading-relaxed max-w-2xl mx-auto">
             {t["home.exploreDescription"]}
           </p>
-          <div className="relative max-w-2xl w-full mx-auto rounded-lg border border-magenta/40 focus:border-magenta hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-colors transition-all group">
+          <form action="/search" method="get" className="relative max-w-2xl w-full mx-auto rounded-lg border border-magenta/40 focus:border-magenta hover:border-magenta shadow-[0_2px_8px_-2px_rgba(var(--magenta-rgb),0.15),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_-2px_rgba(var(--magenta-rgb),0.28),0_2px_6px_rgba(0,0,0,0.15)] transition-colors transition-all group">
             <input
               type="text"
+              name="q"
               placeholder={t["home.searchPlaceholder"]}
               className="w-full px-4 md:px-6 py-3 md:py-4 text-sm md:text-base focus:outline-none placeholder:text-text-gray"
             />
-            <button className="absolute right-2 top-1/2 -translate-y-1/2 px-4 md:px-6 py-2 border border-magenta bg-magenta md:bg-magenta/20 hover:bg-magenta transition-colors rounded-lg font-semibold text-sm md:text-base inline-flex items-center justify-center">
-                <Icon icon="tabler:search" className="h-4.5 w-4.5" aria-hidden="true" />
+            <div className="flex items-center gap-2">
+            <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 px-4 md:px-6 py-2 border border-magenta bg-magenta md:bg-magenta/20 hover:bg-magenta transition-colors rounded-lg font-semibold text-sm md:text-base inline-flex items-center justify-center gap-2">
+                <Icon icon="tabler:search" className="h-5 w-5" />
+                {t["home.searchPlaceholder"]}
             </button>
-          </div>
+            </div>
+          </form>
         </div>
       </section>
 
@@ -137,14 +140,16 @@ export default async function Home() {
           </h2>
           <p className="text-base md:text-lg lg:text-xl text-text-gray mb-12 md:mb-20 leading-relaxed max-w-2xl mx-auto">
             {t["home.surveyDescription"]}
-          </p>    
+          </p>
+          <div className="py-6 flex text-center justify-center">
           <SilentLink
             href="/survey"
             ariaLabel={t["home.takeSurvey"]}
-            className="inline-block px-6 md:px-8 py-3 md:py-4 bg-magenta md:bg-magenta/20 border border-magenta btn-fill-hover transition-colors rounded-lg font-semibold text-sm md:text-base"
+            className="inline-block px-6 py-3 md:py-4 bg-magenta md:bg-magenta/20 border border-magenta btn-fill-hover transition-colors rounded-lg font-semibold text-sm md:text-base gap-2"
           >
-            {t["home.takeSurvey"]}<Icon icon="tabler:arrow-right" className="h-4.5 w-4.5 inline-block ml-1"/>
+            {t["home.takeSurvey"]}<Icon icon="tabler:arrow-right" className="h-5 w-5"/>
           </SilentLink>
+          </div>
         </div>
       </section>
     </main>

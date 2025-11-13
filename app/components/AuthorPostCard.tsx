@@ -113,12 +113,12 @@ export default function AuthorPostCard({ post }: Props) {
                 {post.category.name}
               </SilentLink>
             ) : (
-              <span className="uppercase tracking-wide font-semibold text-lg text-text-gray/60">No category</span>
+              <span className="uppercase tracking-wide font-semibold text-lg text-text-gray/60">{t["post.noCategory"]}</span>
             )}
             {/* Date below category */}
             <div className="flex items-center gap-1 mt-0.5">
               <Icon icon="tabler:calendar-week" className="w-4.5 h-4.5" />
-              {post.publishedAt ? formatDate(new Date(post.publishedAt), post.locale) : "Draft"}
+              {post.publishedAt ? formatDate(new Date(post.publishedAt), post.locale) : t["post.draft"]}
             </div>
           </div>
           <div className="text-text-gray group-hover:text-white hover:!text-magenta flex-shrink-0 self-end">

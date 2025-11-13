@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import en from "@/i18n/en.json";
+import es from "@/i18n/es.json";
 
 export default function LocaleSwitcher({
   currentLocale,
@@ -31,7 +33,7 @@ export default function LocaleSwitcher({
   
   return (
     <div className="flex items-center gap-2 text-sm border border-violet/30 hover:border-magenta transition-colors px-3 py-1 rounded">
-      <span className="text-text-gray">Language:</span>
+  <span className="text-text-gray">{currentLocale === "es" ? es["nav.language"] : en["nav.language"]}:</span>
       <span className="font-medium uppercase">{currentLocale}</span>
       <span className="text-text-gray">|</span>
       {otherLocales.map((locale) => (

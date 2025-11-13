@@ -1,4 +1,6 @@
 "use client";
+import en from "@/i18n/en.json";
+import es from "@/i18n/es.json";
 import AuthorImage from "./AuthorImage";
 import { useRouter } from "next/navigation";
 import { Icon } from '@iconify/react';
@@ -23,6 +25,10 @@ function normalizeUrl(url?: string | null) {
 }
 
 export default function AuthorCard({ author }: { author: Author }) {
+  // Detectar locale desde pathname
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+  const locale: "en" | "es" = pathname.startsWith("/es") ? "es" : "en";
+  const t = locale === "en" ? en : es;
   const router = useRouter();
   const go = () => router.push(`/writers/${author.slug}`);
   const onKey = (e: React.KeyboardEvent) => {
@@ -48,7 +54,7 @@ export default function AuthorCard({ author }: { author: Author }) {
         <div className="flex items-center justify-between mb-1 w-full">
           <span className="font-semibold text-2xl transition-colors truncate link-effect-from-text">{author.name}</span>
           <span className="flex items-center gap-1 text-lg text-text-gray group-hover:text-magenta">
-            <Icon icon="tabler:notes" className="h-4.5 w-4.5"/> {author.count} {author.count === 1 ? 'article' : 'articles'}
+            <Icon icon="tabler:notes" className="h-4.5 w-4.5"/> {author.count} {author.count === 1 ? t["page.article"] : t["page.articles"]}
           </span>
         </div>
         {author.bio && (
@@ -68,7 +74,7 @@ export default function AuthorCard({ author }: { author: Author }) {
             className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover flex items-center gap-1"
             target="_blank"
           >
-            <Icon icon="tabler:link" className="h-4.5 w-4.5 inline-block" /> Website
+            <Icon icon="tabler:link" className="h-4.5 w-4.5 inline-block" /> {t["author.website"]}
           </SilentLink>
         )}
         {author.linkedinUrl && (
@@ -79,7 +85,7 @@ export default function AuthorCard({ author }: { author: Author }) {
             className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover flex items-center gap-1"
             target="_blank"
           >
-            <Icon icon="tabler:brand-linkedin" className="h-4.5 w-4.5 inline-block" /> LinkedIn
+            <Icon icon="tabler:brand-linkedin" className="h-4.5 w-4.5 inline-block" /> {t["author.linkedin"]}
           </SilentLink>
         )}
         {author.githubUrl && (
@@ -90,7 +96,7 @@ export default function AuthorCard({ author }: { author: Author }) {
             className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover flex items-center gap-1"
             target="_blank"
           >
-            <Icon icon="tabler:brand-github" className="h-4.5 w-4.5 inline-block" /> GitHub
+            <Icon icon="tabler:brand-github" className="h-4.5 w-4.5 inline-block" /> {t["author.github"]}
           </SilentLink>
         )}
         {author.xUrl && (
@@ -101,7 +107,7 @@ export default function AuthorCard({ author }: { author: Author }) {
             className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover flex items-center gap-1"
             target="_blank"
           >
-            <Icon icon="tabler:brand-x" className="h-4.5 w-4.5 inline-block" /> Twitter
+            <Icon icon="tabler:brand-x" className="h-4.5 w-4.5 inline-block" /> {t["author.twitter"]}
           </SilentLink>
         )}
       </div>

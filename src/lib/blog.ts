@@ -1,4 +1,7 @@
+import { sanitizeLocale, sanitizeSlug, sanitizeLimit } from "@/src/lib/utils";
 export async function getAuthorWithTranslation(slug: string, locale: string) {
+  slug = sanitizeSlug(slug);
+  locale = sanitizeLocale(locale);
   const { db } = await import("@/src/db/client");
   const { authors, authorTranslations } = await import("@/src/db/schema");
   const rows = await db
@@ -35,9 +38,11 @@ export async function getAuthorWithTranslation(slug: string, locale: string) {
     linkedinUrl: rows[0].linkedinUrl,
     githubUrl: rows[0].githubUrl,
     xUrl: rows[0].xUrl,
-  };
-}
+    };
+  }
 export async function getCategoryWithTranslation(slug: string, locale: string) {
+  slug = sanitizeSlug(slug);
+  locale = sanitizeLocale(locale);
   const { db } = await import("@/src/db/client");
   const { categories, categoryTranslations } = await import("@/src/db/schema");
   const rows = await db
@@ -136,6 +141,8 @@ export type PostSummary = {
 };
 
 export async function getLatestPosts(locale: string, limit = 10, cursor?: string) {
+  locale = sanitizeLocale(locale);
+  limit = sanitizeLimit(limit, 10, 50);
   const after = cursor ? new Date(cursor) : undefined;
 
   const rows = await db
@@ -180,6 +187,8 @@ export async function getLatestPosts(locale: string, limit = 10, cursor?: string
 }
 
 export async function getPostBySlug(slug: string, locale: string) {
+  slug = sanitizeSlug(slug);
+  locale = sanitizeLocale(locale);
   const rows = await db
     .select({
       groupId: postGroups.id,
@@ -255,6 +264,10 @@ export async function getRelatedByTag(
   tag: string,
   limit = 6
 ) {
+  slug = sanitizeSlug(slug);
+  locale = sanitizeLocale(locale);
+  tag = sanitizeSlug(tag);
+  limit = sanitizeLimit(limit, 6, 20);
   const [grp] = await db
     .select({ id: postGroups.id })
     .from(postGroups)
@@ -295,6 +308,7 @@ export async function getRelatedByTag(
 }
 
 export async function getCategories(locale: string) {
+  locale = sanitizeLocale(locale);
   const rows = await db.execute<{
     slug: string;
     name: string;
@@ -328,7 +342,136 @@ export async function getCategories(locale: string) {
   }));
 }
 
+export async function getTags(locale: string, limit?: number, offset?: number) {
+  locale = sanitizeLocale(locale);
+  limit = sanitizeLimit(limit, 20, 100);
+  offset = sanitizeLimit(offset, 0, 1000);
+  const rows = await db.execute<{
+    slug: string;
+    name: string;
+    count: number;
+  }>(sql`
+    SELECT 
+      t.slug, 
+      t.name,
+      COALESCE(COUNT(DISTINCT p.id), 0)::int as count
+    FROM tags t
+    LEFT JOIN post_group_tags pgt ON pgt.tag_id = t.id
+    LEFT JOIN post_groups g ON g.id = pgt.group_id
+    LEFT JOIN posts p ON p.group_id = g.id
+      AND p.locale = ${locale}
+      AND p.draft = false
+      AND p.published_at IS NOT NULL
+    GROUP BY t.slug, t.name
+    HAVING COUNT(DISTINCT p.id) > 0
+    ORDER BY t.name ASC
+    ${limit ? sql`LIMIT ${limit}` : sql``}
+    ${offset ? sql`OFFSET ${offset}` : sql``}
+  `);
+
+  return rows.rows.map((r) => ({
+    slug: r.slug,
+    name: r.name,
+    count: r.count,
+  }));
+}
+
+export async function getTagsCount(locale: string) {
+  locale = sanitizeLocale(locale);
+  const rows = await db.execute<{
+    count: number;
+  }>(sql`
+    SELECT COUNT(DISTINCT t.id)::int as count
+    FROM tags t
+    INNER JOIN post_group_tags pgt ON pgt.tag_id = t.id
+    INNER JOIN post_groups g ON g.id = pgt.group_id
+    INNER JOIN posts p ON p.group_id = g.id
+      AND p.locale = ${locale}
+      AND p.draft = false
+      AND p.published_at IS NOT NULL
+  `);
+
+  return rows.rows[0]?.count ?? 0;
+}
+
+export async function getPostsByTagWithTags({ slug, locale, offset, limit }: { slug: string, locale: string, offset: number, limit: number }) {
+  slug = sanitizeSlug(slug);
+  locale = sanitizeLocale(locale);
+  offset = sanitizeLimit(offset, 0, 1000);
+  limit = sanitizeLimit(limit, 10, 100);
+  const { db } = await import("@/src/db/client");
+  const { authors, postGroups, posts, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
+
+  // Get the tag first
+  const [tag] = await db
+    .select({ id: tagsTable.id, slug: tagsTable.slug, name: tagsTable.name })
+    .from(tagsTable)
+    .where(eq(tagsTable.slug, slug))
+    .limit(1);
+
+  if (!tag) {
+    return { items: [], total: 0, tag: null };
+  }
+
+  // Get total count
+  const totalRows = await db
+    .select({ count: sql`COUNT(DISTINCT post_groups.id)` })
+    .from(posts)
+    .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
+    .innerJoin(postGroupTags, eq(postGroupTags.groupId, postGroups.id))
+    .where(
+      and(
+        eq(postGroupTags.tagId, tag.id),
+        eq(posts.locale, locale),
+        eq(posts.draft, false),
+        sql`posts.published_at IS NOT NULL`
+      )
+    );
+  const total = totalRows[0]?.count ?? 0;
+
+  // Get paginated posts
+  const items = await db
+    .selectDistinctOn([postGroups.id], {
+      groupId: postGroups.id,
+      slug: postGroups.slug,
+      title: posts.title,
+      description: posts.description,
+      locale: posts.locale,
+      coverUrl: postGroups.coverUrl,
+      readMinutes: posts.readMinutes,
+      publishedAt: posts.publishedAt,
+      authorSlug: authors.slug,
+      authorName: authors.name,
+      authorAvatarUrl: authors.avatarUrl,
+    })
+    .from(posts)
+    .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
+    .innerJoin(postGroupTags, eq(postGroupTags.groupId, postGroups.id))
+    .innerJoin(authors, eq(postGroups.authorId, authors.id))
+    .where(
+      and(
+        eq(postGroupTags.tagId, tag.id),
+        eq(posts.locale, locale),
+        eq(posts.draft, false),
+        sql`posts.published_at IS NOT NULL`
+      )
+    )
+    .orderBy(postGroups.id, desc(posts.publishedAt))
+    .limit(limit)
+    .offset(offset);
+
+  const groupIds = items.map((p: any) => p.groupId).filter((id: number) => id);
+  const tagMap = await fetchTagsForGroups(groupIds);
+
+  return {
+    items: mapPostRows(items, tagMap),
+    total,
+    tag,
+  };
+}
+
 export async function getAuthorsWithCounts(locale: string) {
+  locale = sanitizeLocale(locale);
   const rows = await db.execute<{
     slug: string;
     name: string;
@@ -367,30 +510,98 @@ export async function getAuthorsWithCounts(locale: string) {
   }));
 }
 
-export async function searchPosts(locale: string, q: string, limit = 20) {
+export async function searchPosts(locale: string, q: string, limit = 20, offset: number = 0) {
+  locale = sanitizeLocale(locale);
+  limit = sanitizeLimit(limit, 20, 100);
+  offset = sanitizeLimit(offset, 0, 1000);
   const like = `%${q}%`;
-  const rows = await db.execute<{
-    slug: string;
-    title: string;
-    cover_url: string | null;
-    published_at: Date | null;
-  }>(sql`
-    SELECT g.slug, p.title, g.cover_url, p.published_at
-    FROM posts p
-    JOIN post_groups g ON g.id = p.group_id
-    WHERE p.locale = ${locale}
-      AND p.draft = false
-      AND p.published_at IS NOT NULL
-      AND (p.tsv @@ plainto_tsquery('simple', ${q})
-           OR p.title ILIKE ${like})
-    ORDER BY p.published_at DESC
-    LIMIT ${limit}
-  `);
+  // Obtener el total de resultados
+  const totalRows = await db
+    .select({ count: sql`COUNT(DISTINCT post_groups.id)` })
+    .from(posts)
+    .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
+    .where(
+      and(
+        eq(posts.locale, locale),
+        eq(posts.draft, false),
+        sql`posts.published_at IS NOT NULL`,
+        sql`(
+          posts.tsv @@ plainto_tsquery('simple', ${q})
+          OR posts.title ILIKE ${like}
+          OR posts.description ILIKE ${like}
+          OR posts.body_md ILIKE ${like}
+        )`
+      )
+    );
+  const total = totalRows[0]?.count ?? 0;
 
-  return rows.rows;
+  // Buscar posts y traer todos los datos necesarios para PostCard
+  const items = await db
+    .selectDistinctOn([postGroups.id], {
+      groupId: postGroups.id,
+      slug: postGroups.slug,
+      title: posts.title,
+      description: posts.description,
+      locale: posts.locale,
+      coverUrl: postGroups.coverUrl,
+      readMinutes: posts.readMinutes,
+      publishedAt: posts.publishedAt,
+      authorSlug: authors.slug,
+      authorName: authors.name,
+      authorAvatarUrl: authors.avatarUrl,
+      catSlug: categories.slug,
+      catName: categories.name,
+      catImageUrl: categories.imageUrl,
+    })
+    .from(posts)
+    .innerJoin(postGroups, eq(posts.groupId, postGroups.id))
+    .leftJoin(authors, eq(postGroups.authorId, authors.id))
+    .leftJoin(categories, eq(postGroups.categoryId, categories.id))
+    .where(
+      and(
+        eq(posts.locale, locale),
+        eq(posts.draft, false),
+        sql`posts.published_at IS NOT NULL`,
+        sql`(
+          posts.tsv @@ plainto_tsquery('simple', ${q})
+          OR posts.title ILIKE ${like}
+          OR posts.description ILIKE ${like}
+          OR posts.body_md ILIKE ${like}
+        )`
+      )
+    )
+    .orderBy(postGroups.id, desc(posts.publishedAt))
+    .limit(limit)
+    .offset(offset);
+
+  // Obtener tags para los posts encontrados
+  const groupIds = items.map((r) => r.groupId).filter(Boolean) as number[];
+  const tagMap = await fetchTagsForGroups(groupIds);
+
+  // Mapear los resultados al formato PostSummary
+  return {
+    items: items.map((r) => ({
+      slug: r.slug,
+      title: r.title,
+      description: r.description ?? null,
+      locale: r.locale,
+      coverUrl: r.coverUrl,
+      readMinutes: r.readMinutes ? Number(r.readMinutes) : null,
+      author: { slug: r.authorSlug, name: r.authorName, avatarUrl: r.authorAvatarUrl },
+      category: {
+        slug: typeof r.catSlug !== "undefined" ? r.catSlug ?? null : null,
+        name: typeof r.catName !== "undefined" ? r.catName ?? null : null,
+        imageUrl: typeof r.catImageUrl !== "undefined" ? r.catImageUrl ?? null : null,
+      },
+      publishedAt: r.publishedAt,
+      tags: r.groupId ? tagMap[r.groupId] || [] : [],
+    })),
+    total,
+  };
 }
 
 export async function getPostsByAuthorWithTags(authorId: number, locale: string) {
+  locale = sanitizeLocale(locale);
   const { db } = await import("@/src/db/client");
   const { postGroups, posts, authors, categories, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
   const items = await db
@@ -422,6 +633,10 @@ export async function getPostsByAuthorWithTags(authorId: number, locale: string)
 }
 
 export async function getPostsByCategoryWithTags({ slug, locale, offset, limit }: { slug: string, locale: string, offset: number, limit: number }) {
+  slug = sanitizeSlug(slug);
+  locale = sanitizeLocale(locale);
+  offset = sanitizeLimit(offset, 0, 1000);
+  limit = sanitizeLimit(limit, 10, 100);
   const { db } = await import("@/src/db/client");
   const { authors, categories, postGroups, posts, postGroupTags, tags: tagsTable } = await import("@/src/db/schema");
 

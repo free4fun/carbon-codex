@@ -111,7 +111,7 @@ export default function CategoryPostCard({ post }: Props) {
            {/* Author */}
            {post.author?.name ? (
             <SilentLink
-              href={`/authors/${post.author.slug}`}
+              href={`/writers/${post.author.slug}`}
               ariaLabel={post.author.name || undefined}
               stopPropagation
               className="text-sm link-effect-from-text flex items-center gap-2"

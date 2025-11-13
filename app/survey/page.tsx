@@ -12,17 +12,15 @@ export default async function SurveyPage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-[80vh] px-6">
       <div className="max-w-3xl w-full space-y-6 text-center">
-        <h1 className="text-4xl font-bold text-cyan">
+        <h1 className="text-4xl font-bold text-magenta">
           {t["nav.survey"]}
         </h1>
         <p className="text-lg text-text-gray">
-          {locale === "en"
-            ? "Share your thoughts and help us improve."
-            : "Comparte tus opiniones y ayúdanos a mejorar."}
+          {t["home.surveyDescription"]}
         </p>
         <div className="pt-4">
           <p className="text-sm text-text-gray/70">
-            {locale === "en" ? "Coming soon..." : "Próximamente..."}
+            {t["survey.comingSoon"]}
           </p>
         </div>
       </div>

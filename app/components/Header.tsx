@@ -99,6 +99,11 @@ export default function Header() {
       isActive: isActive("/categories"),
     },
     {
+      href: "/tags",
+      label: t["nav.tags"],
+      isActive: isActive("/tags"),
+    },
+    {
       href: "/writers",
       label: t["nav.writers"],
       isActive: isActive("/writers"),
@@ -141,6 +146,17 @@ export default function Header() {
                 <NavLink {...link} />
               </li>
             ))}
+            {/* Search link */}
+            <li>
+              <SilentLink
+                href="/search"
+                ariaLabel={t["home.searchPlaceholder"]}
+                className="flex items-center gap-2  rounded transition-colors hover:text-magenta"
+              >
+                
+                <Icon icon="tabler:search" className="w-5 h-5" />
+              </SilentLink>
+            </li>
             <li>
               <button
                 onClick={toggleLang}
@@ -181,6 +197,16 @@ export default function Header() {
               <NavLink {...link} className="block" />
             </li>
           ))}
+          {/* Search link mobile */}
+          <li>
+            <SilentLink
+              href="/search"
+              ariaLabel={t["home.searchPlaceholder"]}
+              className="flex items-center gap-2 px-2 py-1 rounded hover:bg-magenta/10 transition-colors"
+            >
+              <Icon icon="tabler:search" className="w-5 h-5" />
+            </SilentLink>
+          </li>
           <li className="pt-2">
             <div className="flex items-center gap-2">
               <button
@@ -191,7 +217,6 @@ export default function Header() {
                 <Icon icon="tabler:world" className="w-4.5 h-4.5" />
                 <span className="text-sm">{locale === "en" ? t["spanish"] : t["english"]}</span>
               </button>
-
             </div>
           </li>
         </ul>

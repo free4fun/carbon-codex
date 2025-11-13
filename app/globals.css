@@ -396,7 +396,14 @@ body {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Asegura que el contenido del botón esté por encima del fondo animado */
+.btn-fill-hover > * {
+  position: relative;
+  z-index: 2;
 }
 .btn-fill-hover::after {
   content: "";

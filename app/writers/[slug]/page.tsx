@@ -1,3 +1,5 @@
+import en from "@/i18n/en.json";
+import es from "@/i18n/es.json";
 
 import { headers, cookies } from "next/headers";
 import { getAuthorWithTranslation, getPostsByAuthorWithTags } from "@/src/lib/blog";
@@ -11,6 +13,7 @@ export default async function AuthorPage({ params, searchParams }: { params: any
   const cookieStore = await cookies();
   const locale = (headersList.get("x-locale") as string) || (cookieStore.get("NEXT_LOCALE")?.value as string) || "en";
   // Resolve params/searchParams if promises
+  const t = locale === "es" ? es : en;
   const p: any = params && typeof params.then === "function" ? await params : params;
   const resolvedParams = p || {};
   const rawSlug = resolvedParams?.slug;
@@ -21,11 +24,11 @@ export default async function AuthorPage({ params, searchParams }: { params: any
   const page = parseInt(resolvedSearchParams?.page || "1", 10);
   const PAGE_SIZE = 6;
   if (!slug) {
-    return <div className="mx-auto max-w-3xl px-4 py-12">Author not found</div>;
+    return <div className="mx-auto max-w-3xl px-4 py-12">{t["writers.notFound"]}</div>;
   }
   const author = await getAuthorWithTranslation(slug, locale);
   if (!author) {
-    return <div className="mx-auto max-w-3xl px-4 py-12">Author not found</div>;
+    return <div className="mx-auto max-w-3xl px-4 py-12">{t["writers.notFound"]}</div>;
   }
   const items = await getPostsByAuthorWithTags(author.id, locale);
   const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
@@ -47,7 +50,7 @@ export default async function AuthorPage({ params, searchParams }: { params: any
                   ariaLabel="Website"
                   className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
                   target="_blank"
-                >Website</SilentLink>
+                >{t["author.website"]}</SilentLink>
               )}
               {author.linkedinUrl && (
                 <SilentLink
@@ -55,7 +58,7 @@ export default async function AuthorPage({ params, searchParams }: { params: any
                   ariaLabel="LinkedIn"
                   className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
                   target="_blank"
-                >LinkedIn</SilentLink>
+                >{t["author.linkedin"]}</SilentLink>
               )}
               {author.githubUrl && (
                 <SilentLink
@@ -63,7 +66,7 @@ export default async function AuthorPage({ params, searchParams }: { params: any
                   ariaLabel="GitHub"
                   className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
                   target="_blank"
-                >GitHub</SilentLink>
+                >{t["author.github"]}</SilentLink>
               )}
               {author.xUrl && (
                 <SilentLink
@@ -71,14 +74,14 @@ export default async function AuthorPage({ params, searchParams }: { params: any
                   ariaLabel="X"
                   className="px-2 py-1 border border-magenta rounded-lg btn-fill-hover gap-1"
                   target="_blank"
-                >Twitter</SilentLink>
+                >{t["author.twitter"]}</SilentLink>
               )}
             </div>
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-white pt-13">Posts by {author.name}</h2>
+  <h2 className="text-2xl font-bold text-white pt-13">{t["writers.postsBy"]} {author.name}</h2>
         {items.length === 0 ? (
-          <p className="text-text-gray">No posts yet.</p>
+          <p className="text-text-gray">{t["home.noPosts"]}</p>
         ) : (
           <>
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

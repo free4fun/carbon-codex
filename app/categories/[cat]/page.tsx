@@ -33,16 +33,16 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const offset = (page - 1) * POSTS_PER_PAGE;
   
 
+  const t = locale === "es" ? es : en;
   if (!slug) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Category not found.</h1>
+        <h1 className="text-3xl font-bold mb-2">{t["categories.notFound"]}</h1>
       </div>
     );
   }
 
   const category = await getCategoryWithTranslation(slug, locale);
-  const t = locale === "es" ? es : en;
   const { items, total } = await getPostsByCategoryWithTags({ slug, locale, offset, limit: POSTS_PER_PAGE });
   // Calcular el total de páginas usando el total real
   const totalCount = typeof total === 'string' ? parseInt(total, 10) : Number(total);
@@ -61,7 +61,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   return (
     <main className="flex flex-col">
       <div className="max-w-7xl mx-auto">             
-        <h2 className="text-2xl md:text-4xl font-bold mb-3">{category?.name || derivedCategory?.name || slug || "Category"}</h2>
+        <h2 className="text-2xl md:text-4xl font-bold mb-3">{category?.name || derivedCategory?.name || slug || t["home.categoriesTitle"]}</h2>
         {/*<CategoryImage
           src={category?.imageUrl || derivedCategory?.imageUrl || null}
           alt={category?.name || derivedCategory?.name || slug || "Category"}
@@ -73,12 +73,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           </p>
         )}
         {!category && !derivedCategory && (
-          <p className="text-sm md:text-lg lg:text-xl text-text-gray leading-relaxed mb-6 md:mb-8">Category not found.</p>
+          <p className="text-sm md:text-lg lg:text-xl text-text-gray leading-relaxed mb-6 md:mb-8">{t["categories.notFound"]}</p>
         )}
         
     
   {items.length === 0 ? (
-         <p className="text-sm md:text-lg lg:text-xl text-text-gray leading-relaxed mb-6 md:mb-8">No posts yet.</p>
+         <p className="text-sm md:text-lg lg:text-xl text-text-gray leading-relaxed mb-6 md:mb-8">{t["home.noPosts"]}</p>
        ) : (
          <>
            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
