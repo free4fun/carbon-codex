@@ -6,7 +6,7 @@ import AuthorCard from "@/app/components/AuthorCard";
 
 export const revalidate = 60;
 
-export default async function AuthorsIndex() {
+export default async function AuthorsIndex({ searchParams = {} }: { searchParams?: any }) {
   const headersList = await headers();
   const locale = (headersList.get("x-locale") as string) || "en";
   const t = locale === "es" ? es : en;

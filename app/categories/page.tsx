@@ -10,7 +10,7 @@ export const revalidate = 60;
 
 type Locale = "en" | "es";
 
-export default async function CategoriesPage() {
+export default async function CategoriesPage({ searchParams = {} }: { searchParams?: any }) {
   const headersList = await headers();
   const locale = (headersList.get("x-locale") as Locale) || "en";
   const t = locale === "en" ? en : es;
