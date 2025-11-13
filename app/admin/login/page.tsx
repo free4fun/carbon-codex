@@ -29,11 +29,8 @@ function LoginForm() {
       setErr(res?.error || "Invalid credentials");
       return;
     }
-    // Forzar reload tras login exitoso
-    router.replace(next);
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    // Navegación robusta tras login exitoso
+    window.location.href = next;
   }
 
   // Log para verificar la cookie de sesión
