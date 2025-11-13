@@ -8,19 +8,20 @@ import AuthorImage from "@/app/components/AuthorImage";
 import AuthorPostCard from "@/app/components/AuthorPostCard";
 import SilentLink from "@/app/components/SilentLink";
 
-export default async function AuthorPage({ params, searchParams }: { params: any; searchParams: any }) {
+export default async function AuthorPage({ params, searchParams = Promise.resolve({}) }: { params: any; searchParams?: any }) {
   const headersList = await headers();
   const cookieStore = await cookies();
   const locale = (headersList.get("x-locale") as string) || (cookieStore.get("NEXT_LOCALE")?.value as string) || "en";
-  // Resolve params/searchParams if promises
   const t = locale === "es" ? es : en;
-  const p: any = params && typeof params.then === "function" ? await params : params;
-  const resolvedParams = p || {};
+  let resolvedParams: any = params;
+  if (!resolvedParams) resolvedParams = {};
+  if (typeof resolvedParams.then === "function") resolvedParams = await resolvedParams;
   const rawSlug = resolvedParams?.slug;
   const slug = typeof rawSlug === "string" ? decodeURIComponent(rawSlug).trim() : "";
 
-  const sp: any = searchParams && typeof searchParams.then === "function" ? await searchParams : searchParams;
-  const resolvedSearchParams = sp || {};
+  let resolvedSearchParams: any = searchParams;
+  if (!resolvedSearchParams) resolvedSearchParams = {};
+  if (typeof resolvedSearchParams.then === "function") resolvedSearchParams = await resolvedSearchParams;
   const page = parseInt(resolvedSearchParams?.page || "1", 10);
   const PAGE_SIZE = 6;
   if (!slug) {

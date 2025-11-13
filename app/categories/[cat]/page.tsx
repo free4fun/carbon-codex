@@ -18,20 +18,21 @@ export const fetchCache = 'force-no-store';
 
 const POSTS_PER_PAGE = 6;
 
-export default async function CategoryPage({ params, searchParams }: Props) {
+export default async function CategoryPage({ params, searchParams = Promise.resolve({}) }: Props) {
   const headersList = await headers();
   const cookieStore = await cookies();
   const locale = (headersList.get("x-locale") as string) || (cookieStore.get("NEXT_LOCALE")?.value as string) || "en";
-  const p: any = params as any;
-  const resolvedParams = p && typeof p.then === "function" ? await p : p;
+  let resolvedParams: any = params;
+  if (!resolvedParams) resolvedParams = {};
+  if (typeof resolvedParams.then === "function") resolvedParams = await resolvedParams;
   const rawCat = resolvedParams?.cat;
   const slug = typeof rawCat === "string" ? decodeURIComponent(rawCat).trim() : "";
-  
-  const sp: any = searchParams as any;
-  const resolvedSearchParams = sp && typeof sp.then === "function" ? await sp : sp;
+
+  let resolvedSearchParams: any = searchParams;
+  if (!resolvedSearchParams) resolvedSearchParams = {};
+  if (typeof resolvedSearchParams.then === "function") resolvedSearchParams = await resolvedSearchParams;
   const page = parseInt(resolvedSearchParams?.page || "1", 10);
   const offset = (page - 1) * POSTS_PER_PAGE;
-  
 
   const t = locale === "es" ? es : en;
   if (!slug) {

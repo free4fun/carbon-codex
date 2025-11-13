@@ -15,7 +15,9 @@ type Props = {
 };
 
 export default async function AdminPostsList({ searchParams }: Props) {
-  const params = await searchParams;
+  let params: any = searchParams;
+  if (!params) params = {};
+  if (typeof params.then === "function") params = await params;
   const { q, locale, category, draft, cursor } = params;
   const after = cursor ? new Date(cursor) : undefined;
   const { db } = await import("@/src/db/client");

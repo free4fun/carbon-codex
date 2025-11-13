@@ -13,7 +13,7 @@ type Locale = "en" | "es";
 const TAGS_PER_PAGE = 24;
 
 type Props = {
-  searchParams: Promise<{ page?: string }>;
+  searchParams?: { page?: string } | Promise<{ page?: string }>;
 };
 
 export default async function TagsPage({ searchParams }: Props) {
@@ -21,7 +21,9 @@ export default async function TagsPage({ searchParams }: Props) {
   const locale = (headersList.get("x-locale") as Locale) || "en";
   const t = locale === "en" ? en : es;
 
-  const params = await searchParams;
+  let params: any = searchParams;
+  if (!params) params = {};
+  if (typeof params.then === "function") params = await params;
   const page = parseInt(params.page || "1", 10);
   const offset = (page - 1) * TAGS_PER_PAGE;
 
