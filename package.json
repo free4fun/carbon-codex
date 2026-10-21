@@ -16,7 +16,7 @@
     "@types/jsdom": "^27.0.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
-    "drizzle-orm": "^0.33.0",
+    "drizzle-orm": "^0.45.2",
     "isomorphic-dompurify": "^2.31.0",
     "jsdom": "^27.1.0",
     "katex": "^0.18.2",
